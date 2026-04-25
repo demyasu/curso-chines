@@ -485,21 +485,13 @@ async function playWordAudio(word) {
 function speakWithWebSpeech(text) {
             if (!text) return;
             
-            fetch(`/api/audio?text=${encodeURIComponent(text)}`)
-                .then(res => res.blob())
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const audio = new Audio(url);
-                    audio.play();
-                })
-                .catch(e => {
-                    console.error('TTS error:', e);
-                    if ('speechSynthesis' in window) {
-                        const utter = new SpeechSynthesisUtterance(text);
-                        utter.lang = 'zh-CN';
-                        window.speechSynthesis.speak(utter);
-                    }
-                });
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'zh-CN';
+                utter.rate = 0.8;
+                window.speechSynthesis.speak(utter);
+            }
         }
             };
         }
