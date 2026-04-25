@@ -481,37 +481,10 @@
 
         function speakWithWebSpeech(text) {
             if (!text) return;
-            if (!('speechSynthesis' in window)) {
-                console.error('Speech synthesis not supported');
-                return;
-            }
             
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'zh-CN';
-            utterance.rate = 0.7;
-            utterance.volume = 1;
-            
-            const voices = window.speechSynthesis.getVoices();
-            const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN') || v.lang.includes('Mandarin'));
-            if (chineseVoice) {
-                utterance.voice = chineseVoice;
-            }
-            
-            utterance.onerror = (e) => {
-                console.error('Speech error:', e.error);
-            };
-            
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // Preload voices
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
+            const audio = new Audio();
+            audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&q=${encodeURIComponent(text)}&total=1&idx=0&textlen=${text.length}&client=tw-ob`;
+            audio.play().catch(e => console.error('Audio play error:', e));
         }
 
         loadModules();

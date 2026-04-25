@@ -483,54 +483,11 @@ async function playWordAudio(word) {
         }
         
         function speakWithWebSpeech(text) {
-            try {
-                if (!text) return;
-                if (!('speechSynthesis' in window)) {
-                    console.error('Speech synthesis not supported');
-                    return;
-                }
-                
-                window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'zh-CN';
-                utterance.rate = 0.7;
-                utterance.volume = 1;
-                
-                let voices = [];
-                const getVoices = () => window.speechSynthesis.getVoices();
-                
-                if (getVoices().length > 0) {
-                    voices = getVoices();
-                } else {
-                    const checkVoices = setInterval(() => {
-                        voices = getVoices();
-                        if (voices.length > 0) clearInterval(checkVoices);
-                    }, 100);
-                    setTimeout(() => clearInterval(checkVoices), 2000);
-                }
-                
-                const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN') || v.lang.includes('Mandarin'));
-                if (chineseVoice) {
-                    utterance.voice = chineseVoice;
-                }
-                
-                utterance.onerror = (e) => {
-                    console.error('Speech error:', e.error);
-                };
-                
-                window.speechSynthesis.speak(utterance);
-            } catch (e) {
-                console.error('Speech error:', e);
-            }
-        }
-
-        // Preload voices on page load
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
+            if (!text) return;
+            
+            const audio = new Audio();
+            audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&q=${encodeURIComponent(text)}&total=1&idx=0&textlen=${text.length}&client=tw-ob`;
+            audio.play().catch(e => console.error('Audio play error:', e));
         }
 
         loadModules();
