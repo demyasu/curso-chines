@@ -271,7 +271,7 @@
         function renderModules(modules) {
             const grid = document.getElementById('modules-grid');
             grid.innerHTML = modules.map(m => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule(${m.id})`}">
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}')`}">
                     <div class="module-icon">${m.icon}</div>
                     <div class="module-title">${m.title}</div>
                     <div class="module-title-zh">${m.title_zh}</div>
@@ -298,10 +298,13 @@
         async function selectModule(moduleId) {
             currentModule = moduleId;
             try {
-                const res = await fetch(`${API_BASE}/api/modules/${moduleId}/lessons`);
-                const lessons = await res.json();
-                renderLessons(lessons);
-                showView('lessons-view');
+                const res = await fetch(`${API_BASE}/api/course`);
+                const data = await res.json();
+                const module = data.modules.find(m => m.id == moduleId || m.id === moduleId);
+                if (module) {
+                    renderLessons(module.lessons);
+                    showView('lessons-view');
+                }
             } catch (err) {
                 console.error('Erro ao carregar lições:', err);
             }
@@ -312,11 +315,11 @@
             let html = '<h2 class="lesson-title">Selecione uma lição</h2><div class="modules-grid">';
             lessons.forEach((l, idx) => {
                 html += `
-                <div class="module-card" onclick="showLessonDetail(${l.id})">
+                <div class="module-card" onclick="showLessonDetail('${l.id}')">
                     <div class="module-icon">📚</div>
                     <div class="module-title">${idx + 1}. ${l.title}</div>
                     <div class="module-title-zh">${l.title_zh}</div>
-                    <div class="module-desc">${l.word_count} palavras</div>
+                    <div class="module-desc">${l.words?.length || 0} palavras</div>
                 </div>`;
             });
             html += '</div>';
@@ -331,8 +334,16 @@
         
         async function showLessonDetail(lessonId) {
             try {
-                const res = await fetch(`${API_BASE}/api/lessons/${lessonId}`);
-                const lesson = await res.json();
+                const res = await fetch(`${API_BASE}/api/course`);
+                const data = await res.json();
+                let lesson = null;
+                for (const m of data.modules) {
+                    lesson = m.lessons.find(l => l.id == lessonId || l.id === lessonId);
+                    if (lesson) break;
+                }
+                
+                if (!lesson) return;
+                
                 currentLesson = lesson;
                 currentWords = lesson.words || [];
                 
@@ -377,8 +388,10 @@
         async function startQuiz() {
             if (!currentModule) return;
             try {
-                const res = await fetch(`${API_BASE}/api/modules/${currentModule}/quiz`);
-                currentQuiz = await res.json();
+                const res = await fetch(`${API_BASE}/api/course`);
+                const data = await res.json();
+                const module = data.modules.find(m => m.id == currentModule || m.id === currentModule);
+                currentQuiz = module?.quiz?.questions || [];
                 quizScore = 0;
                 quizAnswered = 0;
                 showView('quiz-view');
