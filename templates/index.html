@@ -15,7 +15,6 @@
             --text: #2C2C2C;
             --accent: #1E90FF;
             --success: #28a745;
-            --danger: #dc3545;
         }
         
         body {
@@ -35,12 +34,10 @@
         }
         
         .header-content { display: flex; justify-content: space-between; align-items: center; }
-        
         .logo { font-size: 28px; font-weight: 700; }
         .logo span { color: var(--secondary); }
-        
         nav ul { display: flex; list-style: none; gap: 30px; }
-        nav a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a { color: white; text-decoration: none; font-weight: 500; cursor: pointer; }
         nav a:hover { color: var(--secondary); }
         
         main { padding: 40px 0; }
@@ -60,7 +57,6 @@
             transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
         }
         
         .module-card:hover:not(.locked) {
@@ -69,14 +65,7 @@
         }
         
         .module-card.locked { opacity: 0.6; cursor: not-allowed; }
-        
-        .module-card.locked::after {
-            content: "🔒";
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-        }
+        .module-card.locked::after { content: "🔒"; position: absolute; top: 20px; right: 20px; font-size: 24px; }
         
         .module-icon { font-size: 48px; margin-bottom: 16px; }
         .module-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
@@ -129,7 +118,6 @@
             cursor: pointer;
             font-size: 14px;
             margin: 8px 0;
-            transition: background 0.3s;
         }
         
         .audio-btn:hover { background: #007BEF; }
@@ -143,7 +131,6 @@
             background: #f9f9f9;
             padding: 20px;
             border-radius: 12px;
-            transition: background 0.3s;
         }
         
         .word-card:hover { background: #f0f0f0; }
@@ -152,9 +139,33 @@
         .word-meaning { color: var(--primary); font-size: 16px; }
         
         .section-title { font-size: 24px; color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--secondary); }
-        .back-btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer; }
+        
+        .quiz-question { font-size: 22px; margin-bottom: 30px; padding: 24px; background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .quiz-options { display: grid; gap: 12px; }
+        
+        .quiz-option {
+            padding: 16px 20px;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .quiz-option:hover { border-color: var(--accent); background: #f0f8ff; }
+        .quiz-option.correct { background: #d4edda; border-color: var(--success); }
+        .quiz-option.wrong { background: #f8d7da; border-color: #dc3545; }
+        
+        .quiz-result { text-align: center; padding: 40px; }
+        .quiz-score { font-size: 64px; font-weight: 700; color: var(--primary); }
+        .quiz-passed { color: var(--success); }
+        .quiz-failed { color: #dc3545; }
         
         footer { background: #333; color: white; padding: 30px 0; margin-top: 50px; text-align: center; }
+        
+        .loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .error { text-align: center; padding: 40px; color: #dc3545; }
         
         @media (max-width: 768px) {
             .header-content { flex-direction: column; gap: 16px; }
@@ -171,8 +182,8 @@
                 <div class="logo">中文课程 <span>Curso de Chinês</span></div>
                 <nav>
                     <ul>
-                        <li><a href="#" id="nav-modules">Módulos</a></li>
-                        <li><a href="#about" id="nav-about">Sobre</a></li>
+                        <li><a onclick="showModules()">Módulos</a></li>
+                        <li><a onclick="showAbout()">Sobre</a></li>
                     </ul>
                 </nav>
             </div>
@@ -183,7 +194,9 @@
         <div id="modules-view">
             <h1 style="font-size: 36px; text-align: center; margin-bottom: 10px;">Escolha seu nível</h1>
             <p style="text-align: center; color: #666; margin-bottom: 40px;">选择您的级别</p>
-            <div class="modules-grid" id="modules-grid"></div>
+            <div class="modules-grid" id="modules-grid">
+                <div class="loading">Carregando módulos...</div>
+            </div>
         </div>
         
         <div id="lessons-view" class="hidden">
@@ -210,8 +223,8 @@
         
         <div id="quiz-view" class="hidden">
             <button class="btn btn-secondary back-btn" onclick="showLessonDetail()">← Voltar à Lição</button>
-            <div id="quiz-container">
-                <div class="quiz-progress" id="quiz-progress">Questão 1 de 7</div>
+            <div class="content-box">
+                <div id="quiz-progress" style="text-align: center; margin-bottom: 20px; color: #666;">Questão 1</div>
                 <div class="quiz-question" id="quiz-question-text"></div>
                 <div class="quiz-options" id="quiz-options"></div>
                 <div class="quiz-result hidden" id="quiz-result">
@@ -247,31 +260,29 @@
     </footer>
 
     <script>
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE = 'http://localhost:4000';
         
         let courseData = { modules: [] };
         let currentModule = null;
         let currentLesson = null;
-        let currentWords = [];
         let currentQuiz = [];
         let quizScore = 0;
         let quizAnswered = 0;
-        const moduleProgress = JSON.parse(localStorage.getItem('moduleProgress') || '{}');
-        
+
         async function loadModules() {
             try {
                 const res = await fetch(`${API_BASE}/api/course`);
                 courseData = await res.json();
                 renderModules(courseData.modules);
             } catch (err) {
-                console.error('Erro ao carregar módulos:', err);
+                document.getElementById('modules-grid').innerHTML = `<div class="error">Erro ao carregar módulos: ${err.message}</div>`;
             }
         }
-        
+
         function renderModules(modules) {
             const grid = document.getElementById('modules-grid');
-            grid.innerHTML = modules.map(m => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}')`}">
+            grid.innerHTML = modules.map((m, idx) => `
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}', ${idx + 1})`}">
                     <div class="module-icon">${m.icon}</div>
                     <div class="module-title">${m.title}</div>
                     <div class="module-title-zh">${m.title_zh}</div>
@@ -283,157 +294,169 @@
                 </div>
             `).join('');
         }
-        
+
         function showView(viewId) {
             ['modules-view', 'lessons-view', 'lesson-detail-view', 'quiz-view', 'about-view'].forEach(id => {
                 document.getElementById(id).classList.toggle('hidden', id !== viewId);
             });
         }
-        
+
         function showModules() {
             showView('modules-view');
-            loadModules();
         }
-        
-        async function selectModule(moduleId) {
+
+        function showAbout() {
+            showView('about-view');
+        }
+
+        function selectModule(moduleId, moduleIndex) {
             currentModule = moduleId;
-            try {
-                const res = await fetch(`${API_BASE}/api/course`);
-                const data = await res.json();
-                const module = data.modules.find(m => m.id == moduleId || m.id === moduleId);
-                if (module) {
-                    renderLessons(module.lessons);
-                    showView('lessons-view');
-                }
-            } catch (err) {
-                console.error('Erro ao carregar lições:', err);
+            const module = courseData.modules[moduleIndex - 1];
+            if (module) {
+                renderLessons(module.lessons);
+                showView('lessons-view');
             }
         }
-        
+
         function renderLessons(lessons) {
             const container = document.getElementById('lessons-container');
             let html = '<h2 class="lesson-title">Selecione uma lição</h2><div class="modules-grid">';
+            
             lessons.forEach((l, idx) => {
+                const wordCount = l.words?.length || 0;
                 html += `
-                <div class="module-card" onclick="showLessonDetail('${l.id}')">
+                <div class="module-card" onclick="showLessonDetail('${l.id}', ${idx + 1})">
                     <div class="module-icon">📚</div>
                     <div class="module-title">${idx + 1}. ${l.title}</div>
                     <div class="module-title-zh">${l.title_zh}</div>
-                    <div class="module-desc">${l.words?.length || 0} palavras</div>
+                    <div class="module-desc">${wordCount} palavras</div>
                 </div>`;
             });
+            
             html += '</div>';
             html += `<button class="btn btn-primary" style="margin-top: 30px;" onclick="startQuiz()">📝 Fazer Prova do Módulo</button>`;
             container.innerHTML = html;
         }
-        
+
         function showLessons() {
-            if (currentModule) selectModule(currentModule);
-            else showView('lessons-view');
-        }
-        
-        async function showLessonDetail(lessonId) {
-            try {
-                const res = await fetch(`${API_BASE}/api/course`);
-                const data = await res.json();
-                let lesson = null;
-                for (const m of data.modules) {
-                    lesson = m.lessons.find(l => l.id == lessonId || l.id === lessonId);
-                    if (lesson) break;
+            if (currentModule) {
+                const moduleIndex = courseData.modules.findIndex(m => m.id === currentModule);
+                if (moduleIndex >= 0) {
+                    renderLessons(courseData.modules[moduleIndex].lessons);
+                    showView('lessons-view');
                 }
-                
-                if (!lesson) return;
-                
-                currentLesson = lesson;
-                currentWords = lesson.words || [];
-                
-                document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
-                
-                const lines = (lesson.content || '').split('\n').filter(l => l.trim());
-                let contentHtml = '';
-                lines.forEach(line => {
-                    const parts = line.split('-');
-                    if (parts.length >= 2) {
-                        contentHtml += `<div>${parts[0].trim()} <span style="color: #666;">- ${parts.slice(1).join('-').trim()}</span></div>`;
-                    }
+            } else {
+                showView('lessons-view');
+            }
+        }
+
+        function showLessonDetail(lessonId, lessonIndex) {
+            const module = courseData.modules.find(m => m.id === currentModule);
+            if (!module) return;
+            
+            const lesson = module.lessons[lessonIndex - 1];
+            if (!lesson) return;
+            
+            currentLesson = lesson;
+            
+            document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
+            
+            const contentHtml = parseLessonContent(lesson.content);
+            document.getElementById('lesson-content').innerHTML = contentHtml;
+            
+            let wordsHtml = '';
+            const words = lesson.words || [];
+            
+            if (words.length === 0) {
+                wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
+            } else {
+                words.forEach(word => {
+                    wordsHtml += `
+                    <div class="word-card">
+                        <div>
+                            <div class="word-chinese">${word.word}</div>
+                            <div class="word-pinyin">${word.pinyin}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="word-meaning">${word.meaning}</div>
+                            <button class="audio-btn" onclick="playWordAudio('${word.word}')">🔊</button>
+                        </div>
+                    </div>`;
                 });
-                document.getElementById('lesson-content').innerHTML = contentHtml;
-                
-                let wordsHtml = '';
-                if (currentWords.length === 0) {
-                    wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
-                } else {
-                    currentWords.forEach(word => {
-                        wordsHtml += `
-                        <div class="word-card">
-                            <div>
-                                <div class="word-chinese">${word.word}</div>
-                                <div class="word-pinyin">${word.pinyin}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="word-meaning">${word.meaning}</div>
-                                <button class="audio-btn" data-word="${word.word}" onclick="playWordAudio(this.dataset.word)">🔊</button>
-                            </div>
-                        </div>`;
-                    });
+            }
+            document.getElementById('lesson-words').innerHTML = wordsHtml;
+            
+            showView('lesson-detail-view');
+        }
+
+        function parseLessonContent(content) {
+            if (!content) return '';
+            
+            const lines = content.split('\n').filter(l => l.trim());
+            return lines.map(line => {
+                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
+                if (match) {
+                    return `<div>${match[1].trim()} <span style="color: #666;">- ${match[2].trim()}</span></div>`;
                 }
-                document.getElementById('lesson-words').innerHTML = wordsHtml;
-                
-                showView('lesson-detail-view');
-            } catch (err) {
-                console.error('Erro ao carregar lição:', err);
-            }
+                return `<div>${line}</div>`;
+            }).join('');
         }
-        
-        async function startQuiz() {
-            if (!currentModule) return;
-            try {
-                const res = await fetch(`${API_BASE}/api/course`);
-                const data = await res.json();
-                const module = data.modules.find(m => m.id == currentModule || m.id === currentModule);
-                currentQuiz = module?.quiz?.questions || [];
-                quizScore = 0;
-                quizAnswered = 0;
-                showView('quiz-view');
-                document.getElementById('quiz-result').classList.add('hidden');
-                document.getElementById('quiz-options').classList.remove('hidden');
-                document.getElementById('quiz-question-text').classList.remove('hidden');
-                showQuizQuestion();
-            } catch (err) {
-                console.error('Erro ao carregar quiz:', err);
+
+        function startQuiz() {
+            const module = courseData.modules.find(m => m.id === currentModule);
+            if (!module) return;
+            
+            currentQuiz = module.quiz?.questions || [];
+            quizScore = 0;
+            quizAnswered = 0;
+            
+            if (currentQuiz.length === 0) {
+                alert('Quiz não disponível para este módulo.');
+                return;
             }
+            
+            showView('quiz-view');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-options').classList.remove('hidden');
+            document.getElementById('quiz-question-text').classList.remove('hidden');
+            showQuizQuestion();
         }
-        
+
         function showQuizQuestion() {
             if (quizAnswered >= currentQuiz.length) {
                 showQuizResult();
                 return;
             }
+            
             const q = currentQuiz[quizAnswered];
+            const questionText = q.q || q.question;
+            
             document.getElementById('quiz-progress').textContent = `Questão ${quizAnswered + 1} de ${currentQuiz.length}`;
-            document.getElementById('quiz-question-text').textContent = q.question;
+            document.getElementById('quiz-question-text').textContent = questionText;
             
             let optionsHtml = '';
             q.options.forEach((opt, idx) => {
-                optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})" id="opt-${idx}">${opt}</div>`;
+                optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})">${opt}</div>`;
             });
             document.getElementById('quiz-options').innerHTML = optionsHtml;
         }
-        
+
         function selectQuizOption(selected, correct) {
             document.querySelectorAll('.quiz-option').forEach(opt => opt.style.pointerEvents = 'none');
-            if (selected === correct) {
-                document.getElementById(`opt-${selected}`).classList.add('correct');
-                quizScore++;
-            } else {
-                document.getElementById(`opt-${selected}`).classList.add('wrong');
-                document.getElementById(`opt-${correct}`).classList.add('correct');
+            
+            const options = document.querySelectorAll('.quiz-option');
+            options[selected].classList.add(selected === correct ? 'correct' : 'wrong');
+            if (selected !== correct) {
+                options[correct].classList.add('correct');
             }
+            
+            if (selected === correct) quizScore++;
             quizAnswered++;
+            
             setTimeout(showQuizQuestion, 1000);
         }
-        
-        async function showQuizResult() {
+
+        function showQuizResult() {
             const percentage = Math.round((quizScore / currentQuiz.length) * 100);
             const passed = percentage >= 70;
             
@@ -445,45 +468,29 @@
             document.getElementById('quiz-message').innerHTML = passed 
                 ? `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`
                 : `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
-            
-            if (passed) {
-                const currentIdx = courseData.modules.findIndex(m => m.id === currentModule);
-                if (currentIdx < courseData.modules.length - 1) {
-                    const nextModuleId = courseData.modules[currentIdx + 1].id;
-                    moduleProgress[nextModuleId] = true;
-                    localStorage.setItem('moduleProgress', JSON.stringify(moduleProgress));
-                    await fetch(`${API_BASE}/api/modules/${nextModuleId}/unlock`, { method: 'POST' });
-                }
-            }
         }
-        
-        let audioCache = {};
 
         function playWordAudio(word) {
             if (!word) return;
             speakWithWebSpeech(word);
         }
-        
+
         function playLessonAudio() {
             if (!currentLesson) return;
-            const text = currentLesson.content.split('\n')[0].split('-')[0].trim();
+            const text = currentLesson.content?.split('\n')[0]?.split(/[-–—]/)[0]?.trim();
             if (text) speakWithWebSpeech(text);
         }
-        
+
         function speakWithWebSpeech(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'zh-CN';
                 utterance.rate = 0.7;
-                utterance.pitch = 1;
                 window.speechSynthesis.speak(utterance);
             }
         }
-        
-        document.getElementById('nav-modules').onclick = (e) => { e.preventDefault(); showModules(); };
-        document.getElementById('nav-about').onclick = (e) => { e.preventDefault(); showView('about-view'); };
-        
+
         loadModules();
     </script>
 </body>
