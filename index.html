@@ -479,16 +479,41 @@
             if (text) speakWithWebSpeech(text);
         }
 
-        function speakWithWebSpeech(text) {
+function speakWithWebSpeech(text) {
             if (!text) return;
             
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
+                
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.lang = 'zh-CN';
                 utter.rate = 0.8;
-                window.speechSynthesis.speak(utter);
+                utter.pitch = 1;
+                
+                // Wait for voices to load
+                const trySpeak = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    const zhVoice = voices.find(v => v.lang.includes('zh'));
+                    if (zhVoice) {
+                        utter.voice = zhVoice;
+                    }
+                    window.speechSynthesis.speak(utter);
+                };
+                
+                if (window.speechSynthesis.getVoices().length > 0) {
+                    trySpeak();
+                } else {
+                    window.speechSynthesis.onvoiceschanged = trySpeak;
+                }
             }
+        }
+
+        // Initialize voices on load
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
+            };
         }
 
         loadModules();

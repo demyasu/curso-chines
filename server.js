@@ -3,9 +3,9 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3003;
 const baseUrl = `http://localhost:${PORT}`;
-const courseData = JSON.parse(fs.readFileSync('./static/course_data.json', 'utf8'));
+const courseData = JSON.parse(fs.readFileSync('./course_data.json', 'utf8'));
 
 const MIME = {
     '.html': 'text/html',
@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
         https.get(ttsUrl, (proxyRes) => {
             if (proxyRes.statusCode !== 200) {
                 res.writeHead(proxyRes.statusCode, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({ error: 'TTS request failed' }));
+                res.end(JSON.stringify({ error: 'TTS failed' }));
                 return;
             }
             
@@ -55,10 +55,10 @@ const server = http.createServer((req, res) => {
         return;
     }
     
-    let filePath = path.join(__dirname, 'static', req.url === '/' ? 'index.html' : req.url);
+    let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
     
     if (!fs.existsSync(filePath)) {
-        filePath = path.join(__dirname, 'static', 'index.html');
+        filePath = path.join(__dirname, 'index.html');
     }
     
     const ext = path.extname(filePath);
