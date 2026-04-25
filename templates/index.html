@@ -482,9 +482,21 @@
         function speakWithWebSpeech(text) {
             if (!text) return;
             
-            const audio = new Audio();
-            audio.src = `https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&q=${encodeURIComponent(text)}&total=1&idx=0&textlen=${text.length}&client=tw-ob`;
-            audio.play().catch(e => console.error('Audio play error:', e));
+            fetch(`/api/audio?text=${encodeURIComponent(text)}`)
+                .then(res => res.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const audio = new Audio(url);
+                    audio.play();
+                })
+                .catch(e => {
+                    console.error('TTS error:', e);
+                    if ('speechSynthesis' in window) {
+                        const utter = new SpeechSynthesisUtterance(text);
+                        utter.lang = 'zh-CN';
+                        window.speechSynthesis.speak(utter);
+                    }
+                });
         }
 
         if ('speechSynthesis' in window) {
