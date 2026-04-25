@@ -260,6 +260,7 @@
     </footer>
 
     <script>
+        const API_BASE = window.location.origin;
         let courseData = { modules: [] };
         let currentModule = null;
         let currentLesson = null;
@@ -468,45 +469,63 @@
                 : `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
         }
 
-        function playWordAudio(word) {
+async function playWordAudio(word) {
             if (!word) return;
+            
+            // Usar Web Speech API primeiro
             speakWithWebSpeech(word);
         }
-
-        function playLessonAudio() {
+        
+        async function playLessonAudio() {
             if (!currentLesson) return;
             const text = currentLesson.content?.split('\n')[0]?.split(/[-–—]/)[0]?.trim();
             if (text) speakWithWebSpeech(text);
         }
-
+        
         function speakWithWebSpeech(text) {
-            if (!text) return;
-            if (!('speechSynthesis' in window)) {
-                console.error('Speech synthesis not supported');
-                return;
+            try {
+                if (!text) return;
+                if (!('speechSynthesis' in window)) {
+                    console.error('Speech synthesis not supported');
+                    return;
+                }
+                
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.7;
+                utterance.volume = 1;
+                
+                let voices = [];
+                const getVoices = () => window.speechSynthesis.getVoices();
+                
+                if (getVoices().length > 0) {
+                    voices = getVoices();
+                } else {
+                    const checkVoices = setInterval(() => {
+                        voices = getVoices();
+                        if (voices.length > 0) clearInterval(checkVoices);
+                    }, 100);
+                    setTimeout(() => clearInterval(checkVoices), 2000);
+                }
+                
+                const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN') || v.lang.includes('Mandarin'));
+                if (chineseVoice) {
+                    utterance.voice = chineseVoice;
+                }
+                
+                utterance.onerror = (e) => {
+                    console.error('Speech error:', e.error);
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.error('Speech error:', e);
             }
-            
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'zh-CN';
-            utterance.rate = 0.7;
-            utterance.volume = 1;
-            
-            const voices = window.speechSynthesis.getVoices();
-            const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN') || v.lang.includes('Mandarin'));
-            if (chineseVoice) {
-                utterance.voice = chineseVoice;
-            }
-            
-            utterance.onerror = (e) => {
-                console.error('Speech error:', e.error);
-            };
-            
-            window.speechSynthesis.speak(utterance);
         }
 
-        // Preload voices
+        // Preload voices on page load
         if ('speechSynthesis' in window) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
