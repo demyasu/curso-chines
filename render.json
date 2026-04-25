@@ -1,0 +1,29 @@
+{
+  "regions": ["oregon", "frankfurt", "singapore"],
+  "services": [
+    {
+      "name": "curso-chines",
+      "repo": "YOUR_GITHUB_REPO",
+      "region": "oregon",
+      "plan": "pro",
+      "autoDeploy": true,
+      "healthCheckPath": "/",
+      "envVars": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORT",
+          "value": "3000"
+        }
+      ],
+      "scale": {
+        "minInstances": 2,
+        "maxInstances": 10,
+        "targetMemoryPercent": 80,
+        "targetCPUPercent": 70
+      }
+    }
+  ]
+}

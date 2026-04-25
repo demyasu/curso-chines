@@ -1,0 +1,13 @@
+node_modules/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+npm-debug.log*
+.DS_Store
+.env
+*.mp3
+static/audio/*
+!static/audio/.gitkeep
+.vscode/
+.idea/

@@ -1,0 +1,21 @@
+database:
+  kind: postgres
+  plan: free
+  name: curso-chines-db
+
+services:
+  - kind: Web Service
+    name: curso-chines
+    repo: YOUR_GITHUB_REPO_URL
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: curso-chines-db
+          property: connectionString

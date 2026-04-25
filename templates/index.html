@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Chinês - 中文课程</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #C41E3A;
+            --secondary: #FFD700;
+            --bg: #FFF8E7;
+            --text: #2C2C2C;
+            --accent: #1E90FF;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #8B0000 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        
+        .logo { font-size: 28px; font-weight: 700; }
+        .logo span { color: var(--secondary); }
+        
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--secondary); }
+        
+        main { padding: 40px 0; }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .module-card.locked { opacity: 0.6; cursor: not-allowed; }
+        
+        .module-card.locked::after {
+            content: "🔒";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+        }
+        
+        .module-icon { font-size: 48px; margin-bottom: 16px; }
+        .module-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+        .module-title-zh { font-size: 18px; color: #666; margin-bottom: 12px; }
+        .module-desc { color: #666; line-height: 1.6; }
+        .module-words-count { margin-top: 12px; font-size: 14px; color: var(--accent); font-weight: 600; }
+        
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin-top: 16px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #20c997); border-radius: 4px; transition: width 0.5s ease; }
+        
+        .hidden { display: none !important; }
+        
+        .lesson-title { font-size: 32px; color: var(--primary); margin-bottom: 30px; }
+        .lesson-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #8B0000; }
+        .btn-secondary { background: #eee; color: var(--text); }
+        .btn-secondary:hover { background: #ddd; }
+        
+        .content-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chinese-text { font-size: 28px; line-height: 2; margin-bottom: 20px; }
+        
+        .audio-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 8px 0;
+            transition: background 0.3s;
+        }
+        
+        .audio-btn:hover { background: #007BEF; }
+        
+        .words-list { display: grid; gap: 16px; margin-top: 20px; }
+        
+        .word-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            transition: background 0.3s;
+        }
+        
+        .word-card:hover { background: #f0f0f0; }
+        .word-chinese { font-size: 24px; font-weight: 700; }
+        .word-pinyin { color: #666; font-size: 16px; margin: 4px 0; }
+        .word-meaning { color: var(--primary); font-size: 16px; }
+        
+        .section-title { font-size: 24px; color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--secondary); }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+        
+        footer { background: #333; color: white; padding: 30px 0; margin-top: 50px; text-align: center; }
+        
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 16px; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .lesson-title { font-size: 24px; }
+            .chinese-text { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">中文课程 <span>Curso de Chinês</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="#" id="nav-modules">Módulos</a></li>
+                        <li><a href="#about" id="nav-about">Sobre</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div id="modules-view">
+            <h1 style="font-size: 36px; text-align: center; margin-bottom: 10px;">Escolha seu nível</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 40px;">选择您的级别</p>
+            <div class="modules-grid" id="modules-grid"></div>
+        </div>
+        
+        <div id="lessons-view" class="hidden">
+            <button class="btn btn-secondary back-btn" onclick="showModules()">← Voltar aos Módulos</button>
+            <div id="lessons-container"></div>
+        </div>
+        
+        <div id="lesson-detail-view" class="hidden">
+            <button class="btn btn-secondary back-btn" onclick="showLessons()">← Voltar às Lições</button>
+            <div class="lesson-header">
+                <div class="lesson-title" id="lesson-detail-title"></div>
+                <button class="btn btn-primary" onclick="startQuiz()">Fazer Prova →</button>
+            </div>
+            <div class="content-box">
+                <h3 class="section-title">Conteúdo da Lição</h3>
+                <div id="lesson-content" class="chinese-text"></div>
+                <button class="audio-btn" onclick="playLessonAudio()">🔊 Ouvir pronúncia</button>
+            </div>
+            <div class="content-box">
+                <h3 class="section-title">Palavras-chave</h3>
+                <div id="lesson-words" class="words-list"></div>
+            </div>
+        </div>
+        
+        <div id="quiz-view" class="hidden">
+            <button class="btn btn-secondary back-btn" onclick="showLessonDetail()">← Voltar à Lição</button>
+            <div id="quiz-container">
+                <div class="quiz-progress" id="quiz-progress">Questão 1 de 7</div>
+                <div class="quiz-question" id="quiz-question-text"></div>
+                <div class="quiz-options" id="quiz-options"></div>
+                <div class="quiz-result hidden" id="quiz-result">
+                    <div class="quiz-score" id="quiz-score"></div>
+                    <div id="quiz-message"></div>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="showModules()">Continuar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="about-view" class="hidden">
+            <button class="btn btn-secondary back-btn" onclick="showModules()">← Voltar aos Módulos</button>
+            <div class="content-box">
+                <h2 class="section-title">Sobre o Curso de Chinês</h2>
+                <p style="font-size: 18px; line-height: 1.8; margin-bottom: 20px;">
+                    Bem-vindo ao Curso de Chinês! 这个课程专为葡萄牙语使用者设计,帮助您从零开始学习中文。
+                </p>
+                <h3 style="color: var(--primary); margin: 20px 0 10px;">📚 Estrutura do Curso</h3>
+                <ul style="line-height: 2; font-size: 16px;">
+                    <li><strong>Iniciante (初级)</strong> - Saudações, números, introduzação pessoal</li>
+                    <li><strong>Intermediário (中级)</strong> - Comida, transporte, compras</li>
+                    <li><strong>Avançado (高级)</strong> - Negócios, expressões complexas</li>
+                    <li><strong>Fluente (精通)</strong> - Expressões idiomáticas, literatura</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>© 2026 Curso de Chinês - 中文课程</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        
+        let courseData = { modules: [] };
+        let currentModule = null;
+        let currentLesson = null;
+        let currentWords = [];
+        let currentQuiz = [];
+        let quizScore = 0;
+        let quizAnswered = 0;
+        const moduleProgress = JSON.parse(localStorage.getItem('moduleProgress') || '{}');
+        
+        async function loadModules() {
+            try {
+                const res = await fetch(`${API_BASE}/api/course`);
+                courseData = await res.json();
+                renderModules(courseData.modules);
+            } catch (err) {
+                console.error('Erro ao carregar módulos:', err);
+            }
+        }
+        
+        function renderModules(modules) {
+            const grid = document.getElementById('modules-grid');
+            grid.innerHTML = modules.map(m => `
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule(${m.id})`}">
+                    <div class="module-icon">${m.icon}</div>
+                    <div class="module-title">${m.title}</div>
+                    <div class="module-title-zh">${m.title_zh}</div>
+                    <div class="module-desc">${m.description}</div>
+                    <div class="module-words-count">📚 ${m.word_count || 0} palavras</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${m.locked ? '0%' : '100%'}"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showView(viewId) {
+            ['modules-view', 'lessons-view', 'lesson-detail-view', 'quiz-view', 'about-view'].forEach(id => {
+                document.getElementById(id).classList.toggle('hidden', id !== viewId);
+            });
+        }
+        
+        function showModules() {
+            showView('modules-view');
+            loadModules();
+        }
+        
+        async function selectModule(moduleId) {
+            currentModule = moduleId;
+            try {
+                const res = await fetch(`${API_BASE}/api/modules/${moduleId}/lessons`);
+                const lessons = await res.json();
+                renderLessons(lessons);
+                showView('lessons-view');
+            } catch (err) {
+                console.error('Erro ao carregar lições:', err);
+            }
+        }
+        
+        function renderLessons(lessons) {
+            const container = document.getElementById('lessons-container');
+            let html = '<h2 class="lesson-title">Selecione uma lição</h2><div class="modules-grid">';
+            lessons.forEach((l, idx) => {
+                html += `
+                <div class="module-card" onclick="showLessonDetail(${l.id})">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">${idx + 1}. ${l.title}</div>
+                    <div class="module-title-zh">${l.title_zh}</div>
+                    <div class="module-desc">${l.word_count} palavras</div>
+                </div>`;
+            });
+            html += '</div>';
+            html += `<button class="btn btn-primary" style="margin-top: 30px;" onclick="startQuiz()">📝 Fazer Prova do Módulo</button>`;
+            container.innerHTML = html;
+        }
+        
+        function showLessons() {
+            if (currentModule) selectModule(currentModule);
+            else showView('lessons-view');
+        }
+        
+        async function showLessonDetail(lessonId) {
+            try {
+                const res = await fetch(`${API_BASE}/api/lessons/${lessonId}`);
+                const lesson = await res.json();
+                currentLesson = lesson;
+                currentWords = lesson.words || [];
+                
+                document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
+                
+                const lines = (lesson.content || '').split('\n').filter(l => l.trim());
+                let contentHtml = '';
+                lines.forEach(line => {
+                    const parts = line.split('-');
+                    if (parts.length >= 2) {
+                        contentHtml += `<div>${parts[0].trim()} <span style="color: #666;">- ${parts.slice(1).join('-').trim()}</span></div>`;
+                    }
+                });
+                document.getElementById('lesson-content').innerHTML = contentHtml;
+                
+                let wordsHtml = '';
+                if (currentWords.length === 0) {
+                    wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
+                } else {
+                    currentWords.forEach(word => {
+                        wordsHtml += `
+                        <div class="word-card">
+                            <div>
+                                <div class="word-chinese">${word.word}</div>
+                                <div class="word-pinyin">${word.pinyin}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="word-meaning">${word.meaning}</div>
+                                <button class="audio-btn" data-word="${word.word}" onclick="playWordAudio(this.dataset.word)">🔊</button>
+                            </div>
+                        </div>`;
+                    });
+                }
+                document.getElementById('lesson-words').innerHTML = wordsHtml;
+                
+                showView('lesson-detail-view');
+            } catch (err) {
+                console.error('Erro ao carregar lição:', err);
+            }
+        }
+        
+        async function startQuiz() {
+            if (!currentModule) return;
+            try {
+                const res = await fetch(`${API_BASE}/api/modules/${currentModule}/quiz`);
+                currentQuiz = await res.json();
+                quizScore = 0;
+                quizAnswered = 0;
+                showView('quiz-view');
+                document.getElementById('quiz-result').classList.add('hidden');
+                document.getElementById('quiz-options').classList.remove('hidden');
+                document.getElementById('quiz-question-text').classList.remove('hidden');
+                showQuizQuestion();
+            } catch (err) {
+                console.error('Erro ao carregar quiz:', err);
+            }
+        }
+        
+        function showQuizQuestion() {
+            if (quizAnswered >= currentQuiz.length) {
+                showQuizResult();
+                return;
+            }
+            const q = currentQuiz[quizAnswered];
+            document.getElementById('quiz-progress').textContent = `Questão ${quizAnswered + 1} de ${currentQuiz.length}`;
+            document.getElementById('quiz-question-text').textContent = q.question;
+            
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})" id="opt-${idx}">${opt}</div>`;
+            });
+            document.getElementById('quiz-options').innerHTML = optionsHtml;
+        }
+        
+        function selectQuizOption(selected, correct) {
+            document.querySelectorAll('.quiz-option').forEach(opt => opt.style.pointerEvents = 'none');
+            if (selected === correct) {
+                document.getElementById(`opt-${selected}`).classList.add('correct');
+                quizScore++;
+            } else {
+                document.getElementById(`opt-${selected}`).classList.add('wrong');
+                document.getElementById(`opt-${correct}`).classList.add('correct');
+            }
+            quizAnswered++;
+            setTimeout(showQuizQuestion, 1000);
+        }
+        
+        async function showQuizResult() {
+            const percentage = Math.round((quizScore / currentQuiz.length) * 100);
+            const passed = percentage >= 70;
+            
+            document.getElementById('quiz-options').classList.add('hidden');
+            document.getElementById('quiz-question-text').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('quiz-score').textContent = `${percentage}%`;
+            document.getElementById('quiz-score').className = `quiz-score ${passed ? 'quiz-passed' : 'quiz-failed'}`;
+            document.getElementById('quiz-message').innerHTML = passed 
+                ? `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`
+                : `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+            
+            if (passed) {
+                const currentIdx = courseData.modules.findIndex(m => m.id === currentModule);
+                if (currentIdx < courseData.modules.length - 1) {
+                    const nextModuleId = courseData.modules[currentIdx + 1].id;
+                    moduleProgress[nextModuleId] = true;
+                    localStorage.setItem('moduleProgress', JSON.stringify(moduleProgress));
+                    await fetch(`${API_BASE}/api/modules/${nextModuleId}/unlock`, { method: 'POST' });
+                }
+            }
+        }
+        
+        let audioCache = {};
+
+        function playWordAudio(word) {
+            if (!word) return;
+            speakWithWebSpeech(word);
+        }
+        
+        function playLessonAudio() {
+            if (!currentLesson) return;
+            const text = currentLesson.content.split('\n')[0].split('-')[0].trim();
+            if (text) speakWithWebSpeech(text);
+        }
+        
+        function speakWithWebSpeech(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.7;
+                utterance.pitch = 1;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        document.getElementById('nav-modules').onclick = (e) => { e.preventDefault(); showModules(); };
+        document.getElementById('nav-about').onclick = (e) => { e.preventDefault(); showView('about-view'); };
+        
+        loadModules();
+    </script>
+</body>
+</html>

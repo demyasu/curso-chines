@@ -1,0 +1,408 @@
+{
+  "modules": [
+    {
+      "id": "iniciante",
+      "title": "Iniciante",
+      "title_zh": "初级",
+      "description": "Aprenda o básico do chinês: saudações, números e frases simples",
+      "icon": "🌱",
+      "lessons": [
+        {
+          "id": "saudacoes",
+          "title": "Saudações",
+          "title_zh": "问候",
+          "content": "你好 (nǐ hǎo) -Olá\n再见 (zài jiàn) -Adeus\n早上好 (zǎo shang hǎo) -Bom dia\n晚上好 (wǎn shang hǎo) -Boa tarde\n晚安 (wǎn ān) -Boa noite\n谢谢 (xiè xie) -Obrigado\n不客气 (bù kè qì) -De nada\n对不起 (duì bu qǐ) -Desculpe\n没关系 (méi guān xi) -Não tem problema\n你好吗 (nǐ hǎo ma) -Como está você?",
+          "words": [
+            {"word": "你好", "pinyin": "nǐ hǎo", "meaning": "Olá"},
+            {"word": "再见", "pinyin": "zài jiàn", "meaning": "Adeus"},
+            {"word": "早上好", "pinyin": "zǎo shang hǎo", "meaning": "Bom dia"},
+            {"word": "晚上好", "pinyin": "wǎn shang hǎo", "meaning": "Boa tarde"},
+            {"word": "晚安", "pinyin": "wǎn ān", "meaning": "Boa noite"},
+            {"word": "谢谢", "pinyin": "xiè xie", "meaning": "Obrigado"},
+            {"word": "不客气", "pinyin": "bù kè qì", "meaning": "De nada"},
+            {"word": "对不起", "pinyin": "duì bu qǐ", "meaning": "Desculpe"},
+            {"word": "没关系", "pinyin": "méi guān xi", "meaning": "Não tem problema"},
+            {"word": "你好吗", "pinyin": "nǐ hǎo ma", "meaning": "Como está você?"}
+          ]
+        },
+        {
+          "id": "numeros",
+          "title": "Números",
+          "title_zh": "数字",
+          "content": "一 (yī) -Um\n二 (èr) -Dois\n三 (sān) -Três\n四 (sì) -Quatro\n五 (wǔ) -Cinco\n六 (liù) -Seis\n七 (qī) -Sete\n八 (bā) -Oito\n九 (jiǔ) -Nove\n十 (shí) -Dez",
+          "words": [
+            {"word": "一", "pinyin": "yī", "meaning": "Um"},
+            {"word": "二", "pinyin": "èr", "meaning": "Dois"},
+            {"word": "三", "pinyin": "sān", "meaning": "Três"},
+            {"word": "四", "pinyin": "sì", "meaning": "Quatro"},
+            {"word": "五", "pinyin": "wǔ", "meaning": "Cinco"},
+            {"word": "六", "pinyin": "liù", "meaning": "Seis"},
+            {"word": "七", "pinyin": "qī", "meaning": "Sete"},
+            {"word": "八", "pinyin": "bā", "meaning": "Oito"},
+            {"word": "九", "pinyin": "jiǔ", "meaning": "Nove"},
+            {"word": "十", "pinyin": "shí", "meaning": "Dez"}
+          ]
+        },
+        {
+          "id": "introducao",
+          "title": "Introdução Pessoal",
+          "title_zh": "自我介绍",
+          "content": "我叫… (wǒ jiào…) -Meu nome é…\n我是… (wǒ shì…) -Eu sou…\n我来自… (wǒ lái zì…) -Eu vim de…\n很高兴认识你 (hěn gāo xìng rèn shi nǐ) -Prazer em conhecê-lo\n你是哪国人? (nǐ shì nǎ guó rén?) -De qual país você é?",
+          "words": [
+            {"word": "我叫", "pinyin": "wǒ jiào", "meaning": "Meu nome é"},
+            {"word": "我是", "pinyin": "wǒ shì", "meaning": "Eu sou"},
+            {"word": "我来自", "pinyin": "wǒ lái zì", "meaning": "Eu vim de"},
+            {"word": "很高兴认识你", "pinyin": "hěn gāo xìng rèn shi nǐ", "meaning": "Prazer em conhecê-lo"},
+            {"word": "你是哪国人", "pinyin": "nǐ shì nǎ guó rén", "meaning": "De qual país você é"}
+          ]
+        },
+        {
+          "id": "familia",
+          "title": "Família",
+          "title_zh": "家庭",
+          "content": "爸爸 (bà ba) -Pai\n妈妈 (mā ma) -Mãe\n哥哥 (gē ge) -Irmão mais velho\n姐姐 (jiě jie) -Irmã mais velha\n弟弟 (dì di) -Irmão mais novo\n妹妹 (mèi mei) -Irmã mais nova\n朋友 (péng you) -Amigo\n老师 (lǎo shī) -Professor\n学生 (xué sheng) -Estudante\n先生 (xiān sheng) -Senhor/Mr.",
+          "words": [
+            {"word": "爸爸", "pinyin": "bà ba", "meaning": "Pai"},
+            {"word": "妈妈", "pinyin": "mā ma", "meaning": "Mãe"},
+            {"word": "哥哥", "pinyin": "gē ge", "meaning": "Irmão mais velho"},
+            {"word": "姐姐", "pinyin": "jiě jie", "meaning": "Irmã mais velha"},
+            {"word": "弟弟", "pinyin": "dì di", "meaning": "Irmão mais novo"},
+            {"word": "妹妹", "pinyin": "mèi mei", "meaning": "Irmã mais nova"},
+            {"word": "朋友", "pinyin": "péng you", "meaning": "Amigo"},
+            {"word": "老师", "pinyin": "lǎo shī", "meaning": "Professor"},
+            {"word": "学生", "pinyin": "xué sheng", "meaning": "Estudante"},
+            {"word": "先生", "pinyin": "xiān sheng", "meaning": "Senhor"}
+          ]
+        },
+        {
+          "id": "cores",
+          "title": "Cores",
+          "title_zh": "颜色",
+          "content": "红色 (hóng sè) -Vermelho\n蓝色 (lán sè) -Azul\n绿色 (lǜ sè) -Verde\n黄色 (huáng sè) -Amarelo\n白色 (bái sè) -Branco\n黑色 (hēi sé) -Preto\n紫色 (zǐ sè) -Roxo\n橙色 (chéng sè) -Laranja\n粉色 (fěn sè) -Rosa\n棕色 (zōng sè) -Marrom",
+          "words": [
+            {"word": "红色", "pinyin": "hóng sè", "meaning": "Vermelho"},
+            {"word": "蓝色", "pinyin": "lán sè", "meaning": "Azul"},
+            {"word": "绿色", "pinyin": "lǜ sè", "meaning": "Verde"},
+            {"word": "黄色", "pinyin": "huáng sè", "meaning": "Amarelo"},
+            {"word": "白色", "pinyin": "bái sè", "meaning": "Branco"},
+            {"word": "黑色", "pinyin": "hēi sé", "meaning": "Preto"},
+            {"word": "紫色", "pinyin": "zǐ sè", "meaning": "Roxo"},
+            {"word": "橙色", "pinyin": "chéng sè", "meaning": "Laranja"},
+            {"word": "粉色", "pinyin": "fěn sè", "meaning": "Rosa"},
+            {"word": "棕色", "pinyin": "zōng sè", "meaning": "Marrom"}
+          ]
+        }
+      ],
+      "quiz": {
+        "title": "Prova - Iniciante",
+        "questions": [
+          {"q": "Como se diz 'Olá' em chinês?", "options": ["你好", "再见", "谢谢", "不客气"], "answer": 0},
+          {"q": "Qual o número '五'?", "options": ["5", "3", "7", "4"], "answer": 0},
+          {"q": "Como se diz 'Obrigado'?", "options": ["你好", "对不起", "谢谢", "再见"], "answer": 2},
+          {"q": "O que significa '早上好'?", "options": ["Boa tarde", "Boa noite", "Bom dia", "Olá"], "answer": 2},
+          {"q": "Qual número vem depois de '七'?", "options": ["六", "八", "九", "十"], "answer": 1},
+          {"q": "Como se diz 'Adeus'?", "options": ["你好", "对不起", "再见", "谢谢"], "answer": 2},
+          {"q": "O que significa '八'?", "options": ["6", "7", "8", "9"], "answer": 2}
+        ]
+      }
+    },
+    {
+      "id": "intermediario",
+      "title": "Intermediário",
+      "title_zh": "中级",
+      "description": "Conversas do dia a dia: comida, transporte e compras",
+      "icon": "🌿",
+      "locked": true,
+      "lessons": [
+        {
+          "id": "comida",
+          "title": "Comida e Restaurante",
+          "title_zh": "餐饮",
+          "content": "我要这个 (wǒ yào zhè gè) -Eu quero este\n多少钱? (duō shǎo qián?) -Quanto custa?\n太贵了 (tài guì le) -Muito caro\n便宜点 (pián yi diǎn) -Mais barato\n好吃 (hǎo chī) -Delicioso\n我要买单 (wǒ yào mǎi dān) -A conta, por favor\n有菜单吗? (yǒu cài dān ma?) -Tem menu?",
+          "words": [
+            {"word": "我要这个", "pinyin": "wǒ yào zhè gè", "meaning": "Eu quero este"},
+            {"word": "多少钱", "pinyin": "duō shǎo qián", "meaning": "Quanto custa"},
+            {"word": "太贵了", "pinyin": "tài guì le", "meaning": "Muito caro"},
+            {"word": "便宜点", "pinyin": "pián yi diǎn", "meaning": "Mais barato"},
+            {"word": "好吃", "pinyin": "hǎo chī", "meaning": "Delicioso"},
+            {"word": "买单", "pinyin": "mǎi dān", "meaning": "A conta"},
+            {"word": "菜单", "pinyin": "cài dān", "meaning": "Menu"}
+          ]
+        },
+        {
+          "id": "transporte",
+          "title": "Transporte",
+          "title_zh": "交通",
+          "content": "出租车 (chū zū chē) -Táxi\n公交车 (gōng jiāo chē) -Ônibus\n地铁 (dì tiě) -Metrô\n飞机 (fēi jī) -Avião\n请问…在哪里? (qǐng wèn…zài nǎ lǐ?) -Onde fica…?\n我要去… (wǒ yào qù…) -Eu quero ir para…\n左边 (zuǒ biān) -Esquerda\n右边 (yòu biān) -Direita",
+          "words": [
+            {"word": "出租车", "pinyin": "chū zū chē", "meaning": "Táxi"},
+            {"word": "公交车", "pinyin": "gōng jiāo chē", "meaning": "Ônibus"},
+            {"word": "地铁", "pinyin": "dì tiě", "meaning": "Metrô"},
+            {"word": "飞机", "pinyin": "fēi jī", "meaning": "Avião"},
+            {"word": "在哪里", "pinyin": "zài nǎ lǐ", "meaning": "Onde fica"},
+            {"word": "左边", "pinyin": "zuǒ biān", "meaning": "Esquerda"},
+            {"word": "右边", "pinyin": "yòu biān", "meaning": "Direita"}
+          ]
+        },
+        {
+          "id": "compras",
+          "title": "Compras",
+          "title_zh": "购物",
+          "content": "这个多少钱? (zhè gè duō shǎo qián?) -Quanto custa isto?\n可以便宜点吗? (kě yǐ pián yi diǎn ma?) -Pode ser mais barato?\n太小了 (tài xiǎo le) -Muito pequeno\n太大了 (tài dà le) -Muito grande\n正好 (zhèng hǎo) -Perfeito\n我买了 (wǒ mǎi le) -Eu compro",
+          "words": [
+            {"word": "这个", "pinyin": "zhè gè", "meaning": "Isto/Este"},
+            {"word": "便宜", "pinyin": "pián yi", "meaning": "Barato"},
+            {"word": "小", "pinyin": "xiǎo", "meaning": "Pequeno"},
+            {"word": "大", "pinyin": "dà", "meaning": "Grande"},
+            {"word": "正好", "pinyin": "zhèng hǎo", "meaning": "Perfeito"},
+            {"word": "买了", "pinyin": "mǎi le", "meaning": "Compro"},
+            {"word": "试", "pinyin": "shì", "meaning": "Experimentar"}
+          ]
+        },
+        {
+          "id": "tempo",
+          "title": "Tempo e Dias",
+          "title_zh": "时间和日期",
+          "content": "今天 (jīn tiān) -Hoje\n明天 (míng tiān) -Amanhã\n昨天 (zuó tiān) -Ontem\n现在 (xiàn zài) -Agora\n几点? (jǐ diǎn?) -Que horas?\n星期一 (xīng qī yī) -Segunda-feira\n星期二 (xīng qī èr) -Terça-feira\n星期三 (xīng qī sān) -Quarta-feira\n星期四 (xīng qī sì) -Quinta-feira\n星期五 (xīng qī wǔ) -Sexta-feira",
+          "words": [
+            {"word": "今天", "pinyin": "jīn tiān", "meaning": "Hoje"},
+            {"word": "明天", "pinyin": "míng tiān", "meaning": "Amanhã"},
+            {"word": "昨天", "pinyin": "zuó tiān", "meaning": "Ontem"},
+            {"word": "现在", "pinyin": "xiàn zài", "meaning": "Agora"},
+            {"word": "几点", "pinyin": "jǐ diǎn", "meaning": "Que horas"},
+            {"word": "星期一", "pinyin": "xīng qī yī", "meaning": "Segunda-feira"},
+            {"word": "星期二", "pinyin": "xīng qī èr", "meaning": "Terça-feira"},
+            {"word": "星期三", "pinyin": "xīng qī sān", "meaning": "Quarta-feira"},
+            {"word": "星期四", "pinyin": "xīng qī sì", "meaning": "Quinta-feira"},
+            {"word": "星期五", "pinyin": "xīng qī wǔ", "meaning": "Sexta-feira"}
+          ]
+        },
+        {
+          "id": "local",
+          "title": "Lugares",
+          "title_zh": "地方",
+          "content": "医院 (yī yuàn) -Hospital\n银行 (yín háng) -Banco\n超市 (chāo shì) -Supermercado\n餐厅 (cān tīng) -Restaurante\n学校 (xué xiào) -Escola\n图书馆 (tú shū guǎn) -Biblioteca\n公园 (gōng yuán) -Parque\n火车站 (huǒ chē zhàn) -Estação de trem\n机场 (jī chǎng) -Aeroporto\n商场 (shāng chǎng) -Shopping",
+          "words": [
+            {"word": "医院", "pinyin": "yī yuàn", "meaning": "Hospital"},
+            {"word": "银行", "pinyin": "yín háng", "meaning": "Banco"},
+            {"word": "超市", "pinyin": "chāo shì", "meaning": "Supermercado"},
+            {"word": "餐厅", "pinyin": "cān tīng", "meaning": "Restaurante"},
+            {"word": "学校", "pinyin": "xué xiào", "meaning": "Escola"},
+            {"word": "图书馆", "pinyin": "tú shū guǎn", "meaning": "Biblioteca"},
+            {"word": "公园", "pinyin": "gōng yuán", "meaning": "Parque"},
+            {"word": "火车站", "pinyin": "huǒ chē zhàn", "meaning": "Estação de trem"},
+            {"word": "机场", "pinyin": "jī chǎng", "meaning": "Aeroporto"},
+            {"word": "商场", "pinyin": "shāng chǎng", "meaning": "Shopping"}
+          ]
+        }
+      ],
+      "quiz": {
+        "title": "Prova - Intermediário",
+        "questions": [
+          {"q": "Como pedir a conta em um restaurante?", "options": ["买单", "菜单", "好吃", "便宜"], "answer": 0},
+          {"q": "O que significa '出租车'?", "options": ["Ônibus", "Metrô", "Táxi", "Avião"], "answer": 2},
+          {"q": "Como pedir desconto?", "options": ["太贵了", "便宜点", "太大了", "好吃的"], "answer": 1},
+          {"q": "O que é '地铁'?", "options": ["Táxi", "Avião", "Metrô", "Ônibus"], "answer": 2},
+          {"q": "Como dizer 'Onde fica…?'", "options": ["在哪里", "左边", "右边", "我要去"], "answer": 0},
+          {"q": "O que significa '正好'?", "options": ["Muito caro", "Perfeito", "Muito grande", "Barato"], "answer": 1},
+          {"q": "Como dizer 'Muito pequeno'?", "options": ["太大", "太小", "正好", "好吃"], "answer": 1}
+        ]
+      }
+    },
+    {
+      "id": "avancado",
+      "title": "Avançado",
+      "title_zh": "高级",
+      "description": "Chinês de negócios e frases complexas",
+      "icon": "🌳",
+      "locked": true,
+      "lessons": [
+        {
+          "id": "negocios",
+          "title": "Negócios",
+          "title_zh": "商务",
+          "content": "很高兴见到您 (hěn gāo xìng jiàn dào nín) -Prazer em conhecê-lo\n我们可以讨论一下吗? (wǒ men kě yǐ tǎo lùn yí xià ma?) -Podemos discutir?\n请问您的预算是多少? (qǐng wèn nín de yù suàn shì duō shǎo?) -Qual é seu orçamento?\n我们需要再考虑一下 (wǒ men xū yào zài kǎo lǜ yí xià) -Precisamos considerar\n合同 (hé tong) -Contrato\n会议 (huì yì) -Reunião\n报价 (bào jià) -Cotação",
+          "words": [
+            {"word": "见到", "pinyin": "jiàn dào", "meaning": "Conhecer"},
+            {"word": "讨论", "pinyin": "tǎo lùn", "meaning": "Discutir"},
+            {"word": "预算", "pinyin": "yù suàn", "meaning": "Orçamento"},
+            {"word": "合同", "pinyin": "hé tong", "meaning": "Contrato"},
+            {"word": "会议", "pinyin": "huì yì", "meaning": "Reunião"},
+            {"word": "报价", "pinyin": "bào jià", "meaning": "Cotação"},
+            {"word": "合作", "pinyin": "hé zuò", "meaning": "Colaborar"}
+          ]
+        },
+        {
+          "id": "expressoes",
+          "title": "Expressões Avançadas",
+          "title_zh": "高级表达",
+          "content": "说实话 (shuō shí huà) -Para ser honesto\n一般来说 (yì bān lái shuō) -Em geral\n除此之外 (chú cǐ zhī wài) -Além disso\n事实上 (shì shí shàng) -Na verdade\n更重要的是 (gèng zhòng yào de shì) -Mais importante\n我认为 (wǒ rèn wéi) -Eu acho que\n不管怎样 (bù guǎn zěn yàng) -De qualquer forma",
+          "words": [
+            {"word": "说实话", "pinyin": "shuō shí huà", "meaning": "Para ser honesto"},
+            {"word": "一般来说", "pinyin": "yì bān lái shuō", "meaning": "Em geral"},
+            {"word": "除此之外", "pinyin": "chú cǐ zhī wài", "meaning": "Além disso"},
+            {"word": "事实上", "pinyin": "shì shí shàng", "meaning": "Na verdade"},
+            {"word": "更重要的是", "pinyin": "gèng zhòng yào de shì", "meaning": "Mais importante"},
+            {"word": "我认为", "pinyin": "wǒ rèn wéi", "meaning": "Eu acho que"},
+            {"word": "不管怎样", "pinyin": "bù guǎn zěn yàng", "meaning": "De qualquer forma"}
+          ]
+        },
+        {
+          "id": "emocoes",
+          "title": "Emoções e Opinions",
+          "title_zh": "情感",
+          "content": "我感到… (wǒ gǎn dào…) -Eu sinto…\n我很喜欢… (wǒ hěn xǐ huan…) -Eu gosto muito de…\n我不太确定… (wǒ bù tài què dìng…) -Eu não tenho certeza…\n这让我感到… (zhè ràng wǒ gǎn dào…) -Isto me faz sentir…\n我希望能… (wǒ xī wàng néng…) -Eu espero poder…",
+          "words": [
+            {"word": "感到", "pinyin": "gǎn dào", "meaning": "Sentir"},
+            {"word": "喜欢", "pinyin": "xǐ huan", "meaning": "Gostar"},
+            {"word": "确定", "pinyin": "què dìng", "meaning": "Ter certeza"},
+            {"word": "让", "pinyin": "ràng", "meaning": "Fazer (causar)"},
+            {"word": "希望", "pinyin": "xī wàng", "meaning": "Esperar"},
+            {"word": "担心", "pinyin": "dān xīn", "meaning": "Preocupar"},
+            {"word": "开心", "pinyin": "kāi xīn", "meaning": "Feliz"}
+          ]
+        },
+        {
+          "id": "telefone",
+          "title": "Comunicação por Telefone",
+          "title_zh": "电话",
+          "content": "请问您是哪位? (qǐng wèn nín shì nǎ wèi?) -Quem é, por favor?\n请稍等 (qǐng shāo děng) -Aguarde um momento\n我现在不方便 (wǒ xiàn zài bù fāng biàn) -Não é conveniente agora\n我可以给您回电话吗? (wǒ kě yǐ gěi nín huí diàn huà ma?) -Posso retornar a ligação?\n您的电话号码是多少? (nín de diàn huà hào mǎ shì duō shǎo?) -Qual é seu número?",
+          "words": [
+            {"word": "哪位", "pinyin": "nǎ wèi", "meaning": "Quem (é)"},
+            {"word": "稍等", "pinyin": "shāo děng", "meaning": "Aguarde"},
+            {"word": "方便", "pinyin": "fāng biàn", "meaning": "Conveniente"},
+            {"word": "回电", "pinyin": "huí diàn", "meaning": "Retornar ligação"},
+            {"word": "号码", "pinyin": "hào mǎ", "meaning": "Número"},
+            {"word": "打", "pinyin": "dǎ", "meaning": "Ligar"},
+            {"word": "接", "pinyin": "jiē", "meaning": "Atender"}
+          ]
+        },
+        {
+          "id": "trabalho",
+          "title": "Ambiente de Trabalho",
+          "title_zh": "工作",
+          "content": "办公室 (bàn gōng shì) -Escritório\n公司 (gōng sī) -Empresa\n同事 (tóng shì) -Colega\n老板 (lǎo bǎn) -Chefe\n加班 (jiā bān) -Horas extras\n请假 (qǐng jià) -Pedir licença\n出差 (chū chāi) -Viagem de negócios\n辞职 (cí zhí) -Demitir-se",
+          "words": [
+            {"word": "办公室", "pinyin": "bàn gōng shì", "meaning": "Escritório"},
+            {"word": "公司", "pinyin": "gōng sī", "meaning": "Empresa"},
+            {"word": "同事", "pinyin": "tóng shì", "meaning": "Colega"},
+            {"word": "老板", "pinyin": "lǎo bǎn", "meaning": "Chefe"},
+            {"word": "加班", "pinyin": "jiā bān", "meaning": "Horas extras"},
+            {"word": "请假", "pinyin": "qǐng jià", "meaning": "Pedir licença"},
+            {"word": "出差", "pinyin": "chū chāi", "meaning": "Viagem de negócios"},
+            {"word": "辞职", "pinyin": "cí zhí", "meaning": "Demitir-se"}
+          ]
+        }
+      ],
+      "quiz": {
+        "title": "Prova - Avançado",
+        "questions": [
+          {"q": "Como dizer 'prazer em conhecê-lo' formalmente?", "options": ["见到你很高兴", "你好", "再见", "谢谢"], "answer": 0},
+          {"q": "O que significa '合同'?", "options": ["Reunião", "Contrato", "Orçamento", "Cotação"], "answer": 1},
+          {"q": "Como dizer 'Em geral'?", "options": ["一般来说", "事实上", "不管怎样", "重要的是"], "answer": 0},
+          {"q": "O que é '会议'?", "options": ["Contrato", "Reunião", "Orçamento", "Trabalho"], "answer": 1},
+          {"q": "Como expressar 'Eu acho que'?", "options": ["我认为", "我知道", "我感到", "我希望"], "answer": 0},
+          {"q": "O que significa '报价'?", "options": ["Reunião", "Orçamento", "Cotação", "Contrato"], "answer": 2},
+          {"q": "Como dizer 'Eu espero poder'?", "options": ["我希望", "我需要", "我想要", "我可以"], "answer": 0}
+        ]
+      }
+    },
+    {
+      "id": "fluente",
+      "title": "Fluente",
+      "title_zh": "精通",
+      "description": "Domínio completo do chinês: expressões idiomáticas e fluência",
+      "icon": "🏆",
+      "locked": true,
+      "lessons": [
+        {
+          "id": "expressoes_idiomaticas",
+          "title": "Expressões Idiomáticas",
+          "title_zh": "成语",
+          "content": "一帆风顺 (yì fān fēng shùn) -Bom sucesso\n画蛇添足 (huà shé tiān zú) -Exagerar\n守株待兔 (shǒu zhū dài tù) -Esperar sem fazer nada\n胸有成竹 (xiōng yǒu chéng zhú) -Ter confiança\n滴水穿石 (dī shuǐ chuān shí) -Persistência\n亡羊补牢 (wáng yáng bǔ láo) -Recuperar tempo perdido\n塞翁失马 (sài wēng shī mǎ) -Bênção disfarçada",
+          "words": [
+            {"word": "一帆风顺", "pinyin": "yì fān fēng shùn", "meaning": "Bom sucesso (literalmente: vento favorável)"},
+            {"word": "画蛇添足", "pinyin": "huà shé tiān zú", "meaning": "Exagerar (literalmente: desenhar serpente e adicionar pés)"},
+            {"word": "守株待兔", "pinyin": "shǒu zhū dài tù", "meaning": "Esperar sem fazer nada"},
+            {"word": "胸有成竹", "pinyin": "xiōng yǒu chéng zhú", "meaning": "Ter confiança total"},
+            {"word": "滴水穿石", "pinyin": "dī shuǐ chuān shí", "meaning": "Persistência vence tudo"},
+            {"word": "亡羊补牢", "pinyin": "wáng yáng bǔ láo", "meaning": "É melhor tarde do que nunca"},
+            {"word": "塞翁失马", "pinyin": "sài wēng shī mǎ", "meaning": "Bênção disfarçada"}
+          ]
+        },
+        {
+          "id": "conversas_avancadas",
+          "title": "Conversas Avançadas",
+          "title_zh": "高级对话",
+          "content": "你觉得…怎么样? (nǐ jué de…zěn me yàng?) -O que você acha de…?\n如果…的话 (rú guǒ…de huà) -Se…\n虽然…但是… (suī rán…dàn shì…) -Embora…no entanto…\n除非…否则… (chú fēi…fǒu zé…) -A menos que…caso contrário…\n不但…而且… (bù dàn…ér qiě…) -Não só…mas também…",
+          "words": [
+            {"word": "觉得", "pinyin": "jué de", "meaning": "Achar/Pensar"},
+            {"word": "如果", "pinyin": "rú guǒ", "meaning": "Se (condicional)"},
+            {"word": "虽然", "pinyin": "suī rán", "meaning": "Embora"},
+            {"word": "但是", "pinyin": "dàn shì", "meaning": "No entanto"},
+            {"word": "除非", "pinyin": "chú fēi", "meaning": "A menos que"},
+            {"word": "否则", "pinyin": "fǒu zé", "meaning": "Caso contrário"},
+            {"word": "不但", "pinyin": "bù dàn", "meaning": "Não só"}
+          ]
+        },
+        {
+          "id": "literatura",
+          "title": "Introdução à Literatura",
+          "title_zh": "文学",
+          "content": "古诗 (gǔ shī) -Poesia clássica\n论语 (lùn yǔ) -Os Analectos de Confúcio\n唐诗 (táng shī) -Poesia Tang\n小说 (xiǎo shuō) -Romance\n汉字 (hàn zì) -Caracteres chineses\n文化 (wén huà) -Cultura\n历史 (lì shǐ) -História",
+          "words": [
+            {"word": "古诗", "pinyin": "gǔ shī", "meaning": "Poesia clássica"},
+            {"word": "论语", "pinyin": "lùn yǔ", "meaning": "Os Analectos"},
+            {"word": "唐诗", "pinyin": "táng shī", "meaning": "Poesia da Dinastia Tang"},
+            {"word": "小说", "pinyin": "xiǎo shuō", "meaning": "Romance"},
+            {"word": "汉字", "pinyin": "hàn zì", "meaning": "Caracteres chineses"},
+            {"word": "文化", "pinyin": "wén huà", "meaning": "Cultura"},
+            {"word": "历史", "pinyin": "lì shǐ", "meaning": "História"}
+          ]
+        },
+        {
+          "id": "filosofia",
+          "title": "Filosofia Chinesa",
+          "title_zh": "哲学",
+          "content": "孔子 (kǒng zǐ) -Confúcio\n老子 (lǎo zǐ) -Laozi\n道 (dào) -O Caminho\n德 (dé) -Virtude\n阴阳 (yīn yáng) -Yin e Yang\n八卦 (bā guà) -Os Oito Trigramas\n天命 (tiān mìng) -Mandato do Céu",
+          "words": [
+            {"word": "孔子", "pinyin": "kǒng zǐ", "meaning": "Confúcio"},
+            {"word": "老子", "pinyin": "lǎo zǐ", "meaning": "Laozi"},
+            {"word": "道", "pinyin": "dào", "meaning": "O Caminho"},
+            {"word": "德", "pinyin": "dé", "meaning": "Virtude"},
+            {"word": "阴阳", "pinyin": "yīn yáng", "meaning": "Yin e Yang"},
+            {"word": "八卦", "pinyin": "bā guà", "meaning": "Oito Trigramas"},
+            {"word": "天命", "pinyin": "tiān mìng", "meaning": "Mandato do Céu"}
+          ]
+        },
+        {
+          "id": "expressoes_avan",
+          "title": "Expressões Regionais",
+          "title_zh": "方言",
+          "content": "普通话 (pǔ tōng huà) -Mandarim padrão\n广东话 (guǎng dōng huà) -Cantonês\n上海话 (shàng hǎi huà) -Shanghainês\n东北话 (dōng běi huà) -Dialeto do Nordeste\n儿化 (ér huà) -Sufixo儿 (er)",
+          "words": [
+            {"word": "普通话", "pinyin": "pǔ tōng huà", "meaning": "Mandarim padrão"},
+            {"word": "广东话", "pinyin": "guǎng dōng huà", "meaning": "Cantonês"},
+            {"word": "上海话", "pinyin": "shàng hǎi huà", "meaning": "Shanghainês"},
+            {"word": "东北话", "pinyin": "dōng běi huà", "meaning": "Dialeto do Nordeste"},
+            {"word": "儿化", "pinyin": "ér huà", "meaning": "Sufixo er"},
+            {"word": "方言", "pinyin": "fāng yán", "meaning": "Dialeto regional"},
+            {"word": "口音", "pinyin": "kǒu yīn", "meaning": "Sotaque"}
+          ]
+        }
+      ],
+      "quiz": {
+        "title": "Prova - Fluente",
+        "questions": [
+          {"q": "O que significa '一帆风顺'?", "options": ["Persistência", "Bom sucesso", "Esperança", "Exagerar"], "answer": 1},
+          {"q": "Como dizer 'Se…' em chinês?", "options": ["虽然", "如果", "但是", "除非"], "answer": 1},
+          {"q": "O que é '成语'?", "options": ["Expressão idiomática", "Poesia", "Romance", "História"], "answer": 0},
+          {"q": "Como dizer 'Embora…no entanto'?", "options": ["虽然…但是", "如果…的话", "不但…而且", "除非…否则"], "answer": 0},
+          {"q": "O que significa '塞翁失马'?", "options": ["Esperar sem fazer", "Bênção disfarçada", "Persistência", "Exagerar"], "answer": 1},
+          {"q": "O que é '小说'?", "options": ["Poesia", "Cultura", "Romance", "História"], "answer": 2},
+          {"q": "Como dizer 'Não só…mas também'?", "options": ["虽然…但是", "如果", "不但…而且", "除非"], "answer": 2}
+        ]
+      }
+    }
+  ]
+}

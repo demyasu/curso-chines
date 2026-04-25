@@ -1,0 +1,34 @@
+{
+  "name": "curso-chines",
+  "version": "1.0.0",
+  "description": "Aplicação web para aprendizado de chinês mandarim",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'",
+    "test": "echo 'No tests yet'",
+    "docker:build": "docker build -t curso-chines .",
+    "docker:run": "docker run -p 3000:3000 curso-chines",
+    "docker:compose": "docker-compose up -d --build",
+    "deploy:render": "bash deploy.sh render",
+    "deploy:fly": "bash deploy.sh fly",
+    "deploy:railway": "bash deploy.sh railway"
+  },
+  "keywords": [
+    "chinese",
+    "mandarin",
+    "language-learning",
+    "portuguese"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ngrok": "^5.0.0-beta.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
