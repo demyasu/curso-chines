@@ -123,16 +123,6 @@
         .audio-btn:hover { background: #007BEF; }
         .audio-btn:active { transform: scale(0.95); }
         
-        .audio-btn.playing {
-            background: var(--success);
-            animation: pulse 0.5s ease-in-out;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
         .words-list { display: grid; gap: 16px; margin-top: 20px; }
         
         .word-card {
@@ -224,7 +214,7 @@
             <div class="content-box">
                 <h3 class="section-title">Conteúdo da Lição</h3>
                 <div id="lesson-content" class="chinese-text"></div>
-                <button class="audio-btn" onclick="playAudio(getLessonText())">🔊 Ouvir lição</button>
+                <button class="audio-btn" onclick="playLessonAudio()">🔊 Ouvir lição</button>
             </div>
             <div class="content-box">
                 <h3 class="section-title">Palavras-chave</h3>
@@ -233,7 +223,7 @@
         </div>
         
         <div id="quiz-view" class="hidden">
-            <button class="btn btn-secondary back-btn" onclick="showLessonDetail()">← Voltar à Lição</button>
+            <button class="btn btn-secondary back-btn" onclick="showLessonDetailView()">← Voltar à Lição</button>
             <div class="content-box">
                 <div id="quiz-progress" style="text-align: center; margin-bottom: 20px; color: #666;">Questão 1</div>
                 <div class="quiz-question" id="quiz-question-text"></div>
@@ -270,8 +260,7 @@
         </div>
     </footer>
 
-<script>
-        let courseData = null;
+    <script>
         let currentModule = null;
         let currentLesson = null;
         let currentLessons = [];
@@ -294,7 +283,7 @@
                 
                 renderModules(modules);
             } catch (err) {
-                document.getElementById('modules-grid').innerHTML = `<div class="error">Erro ao carregar módulos: ${err.message}</div>`;
+                document.getElementById('modules-grid').innerHTML = '<div class="error">Erro ao carregar módulos: ' + err.message + '</div>';
             }
         }
 
@@ -305,7 +294,7 @@
                 return;
             }
             grid.innerHTML = modules.map((m, idx) => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule(${idx + 1})`}">
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : 'selectModule(' + (idx + 1) + ')'}">
                     <div class="module-icon">${m.icon}</div>
                     <div class="module-title">${m.title}</div>
                     <div class="module-title-zh">${m.title_zh}</div>
@@ -336,7 +325,7 @@
         async function selectModule(moduleId) {
             currentModule = moduleId;
             try {
-                const res = await fetch(`/api/modules/${moduleId}/lessons`);
+                const res = await fetch('/api/modules/' + moduleId + '/lessons');
                 currentLessons = await res.json();
                 renderLessons(currentLessons);
                 showView('lessons-view');
@@ -351,66 +340,45 @@
             
             lessons.forEach((l, idx) => {
                 const wordCount = l.word_count || 0;
-                html += `
-                <div class="module-card" onclick="showLessonDetail(${l.id}, ${idx})">
-                    <div class="module-icon">📚</div>
-                    <div class="module-title">${idx + 1}. ${l.title}</div>
-                    <div class="module-title-zh">${l.title_zh}</div>
-                    <div class="module-desc">${wordCount} palavras</div>
-                </div>`;
+                html += '<div class="module-card" onclick="showLessonDetail(' + l.id + ', ' + idx + ')">' +
+                    '<div class="module-icon">📚</div>' +
+                    '<div class="module-title">' + (idx + 1) + '. ' + l.title + '</div>' +
+                    '<div class="module-title-zh">' + l.title_zh + '</div>' +
+                    '<div class="module-desc">' + wordCount + ' palavras</div>' +
+                '</div>';
             });
             
             html += '</div>';
-            html += `<button class="btn btn-primary" style="margin-top: 30px;" onclick="startQuiz()">📝 Fazer Prova do Módulo</button>`;
+            html += '<button class="btn btn-primary" style="margin-top: 30px;" onclick="startQuiz()">📝 Fazer Prova do Módulo</button>';
             container.innerHTML = html;
         }
 
         function showLessons() {
             if (currentModule) {
-                fetch(`/api/modules/${currentModule}/lessons`)
+                fetch('/api/modules/' + currentModule + '/lessons')
                     .then(res => res.json())
                     .then(lessons => {
                         currentLessons = lessons;
                         renderLessons(lessons);
                         showView('lessons-view');
-});
-            container.innerHTML = html;
+                    });
+            } else {
+                showView('lessons-view');
+            }
         }
 
-        function parseLessonContent(content) {
-            if (!content) return '';
-            
-            const lines = content.split('\n').filter(l => l.trim());
-            return lines.map(line => {
-                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
-                if (match) {
-                    const chinese = match[1].trim();
-                    const translation = match[2].trim();
-                    return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
-                        <div>
-                            <span style="font-size: 24px;">${chinese}</span>
-                            <span style="color: #666; margin-left: 10px;">- ${translation}</span>
-                        </div>
-                        <button class="audio-btn" onclick="playAudio('${chinese.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
-                    </div>`;
-                }
-                return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
-                    <span style="font-size: 24px;">${line}</span>
-                    <button class="audio-btn" onclick="playAudio('${line.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
-                </div>`;
-            }).join('');
+        function showLessonDetailView() {
+            showView('lesson-detail-view');
         }
 
         async function showLessonDetail(lessonId, lessonIndex) {
             try {
-                const res = await fetch(`/api/lessons/${lessonId}`);
+                const res = await fetch('/api/lessons/' + lessonId);
                 const lesson = await res.json();
                 currentLesson = lesson;
                 
-                document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
-                
-                const contentHtml = parseLessonContent(lesson.content);
-                document.getElementById('lesson-content').innerHTML = contentHtml;
+                document.getElementById('lesson-detail-title').textContent = lesson.title + ' - ' + lesson.title_zh;
+                document.getElementById('lesson-content').innerHTML = parseLessonContent(lesson.content);
                 
                 let wordsHtml = '';
                 const words = lesson.words || [];
@@ -420,17 +388,12 @@
                 } else {
                     words.forEach(word => {
                         const escapedWord = word.word.replace(/'/g, "\\'");
-                        wordsHtml += `
-                        <div class="word-card">
-                            <div>
-                                <div class="word-chinese">${word.word}</div>
-                                <div class="word-pinyin">${word.pinyin}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="word-meaning">${word.meaning}</div>
-                                <button class="audio-btn" onclick="playAudio('${escapedWord}')">🔊 Ouvir</button>
-                            </div>
-                        </div>`;
+                        wordsHtml += '<div class="word-card">' +
+                            '<div><div class="word-chinese">' + word.word + '</div>' +
+                            '<div class="word-pinyin">' + word.pinyin + '</div></div>' +
+                            '<div style="text-align: right;"><div class="word-meaning">' + word.meaning + '</div>' +
+                            '<button class="audio-btn" onclick="playAudio(\'' + escapedWord + '\')">🔊 Ouvir</button></div>' +
+                        '</div>';
                     });
                 }
                 document.getElementById('lesson-words').innerHTML = wordsHtml;
@@ -441,141 +404,31 @@
             }
         }
 
-        async function loadModules() {
-            try {
-                let data;
-                try {
-                    const res = await fetch('/api/modules');
-                    data = await res.json();
-                } catch (apiErr) {
-                    const res = await fetch('./course_data.json');
-                    const json = await res.json();
-                    data = json.modules;
-                }
-                const unlockedModules = JSON.parse(localStorage.getItem('unlockedModules') || '[]');
-                data.forEach(m => {
-                    const moduleIndex = parseInt(m.id) || parseInt(m.level_order) || 0;
-                    if (unlockedModules.includes(moduleIndex)) {
-                        m.locked = false;
-                    }
-                });
-                renderModules(data);
-            } catch (err) {
-                document.getElementById('modules-grid').innerHTML = `<div class="error">Erro ao carregar módulos: ${err.message}</div>`;
-            }
-        }
-
-        function renderModules(modules) {
-            const grid = document.getElementById('modules-grid');
-            const unlockedModules = JSON.parse(localStorage.getItem('unlockedModules') || '[]');
-            if (!modules || modules.length === 0) {
-                grid.innerHTML = '<div class="error">Nenhum módulo disponível.</div>';
-                return;
-            }
-            modules.forEach(m => {
-                const moduleIndex = parseInt(m.id) || parseInt(m.level_order) || 0;
-                if (unlockedModules.includes(moduleIndex)) {
-                    m.locked = false;
+        function parseLessonContent(content) {
+            if (!content) return '';
+            
+            const lines = content.split('\n').filter(l => l.trim());
+            let html = '';
+            lines.forEach(line => {
+                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
+                if (match) {
+                    const chinese = match[1].trim();
+                    const translation = match[2].trim();
+                    const escapedChinese = chinese.replace(/'/g, "\\'");
+                    html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">' +
+                        '<div><span style="font-size: 24px;">' + chinese + '</span>' +
+                        '<span style="color: #666; margin-left: 10px;">- ' + translation + '</span></div>' +
+                        '<button class="audio-btn" onclick="playAudio(\'' + escapedChinese + '\')">🔊 Ouvir</button>' +
+                    '</div>';
                 }
             });
-            grid.innerHTML = modules.map((m, idx) => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id || m.level_order || idx + 1}')`}">
-                    <div class="module-icon">${m.icon}</div>
-                    <div class="module-title">${m.title}</div>
-                    <div class="module-title-zh">${m.title_zh}</div>
-                    <div class="module-desc">${m.description || ''}</div>
-                    <div class="module-words-count">📚 ${m.word_count || 0} palavras</div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${m.locked ? '0%' : '100%'}"></div>
-                    </div>
-                </div>
-            `).join('');
+            return html;
         }
-
-        function showView(viewId) {
-            ['modules-view', 'lessons-view', 'lesson-detail-view', 'quiz-view', 'about-view'].forEach(id => {
-                document.getElementById(id).classList.toggle('hidden', id !== viewId);
-            });
-        }
-
-        function showModules() {
-            showView('modules-view');
-        }
-
-        function showAbout() {
-            showView('about-view');
-        }
-
-async function selectModule(moduleId) {
-            currentModule = moduleId;
-            try {
-                let lessons;
-                try {
-                    const res = await fetch(`/api/modules/${moduleId}/lessons`);
-                    lessons = await res.json();
-                } catch (e) {
-                    const module = courseData.modules?.find(m => String(m.id) === String(moduleId) || String(m.level_order) === String(moduleId));
-                    lessons = module?.lessons || [];
-                }
-                currentLessons = lessons;
-                renderLessons(lessons);
-                showView('lessons-view');
-            } catch (err) {
-                alert('Erro ao carregar lições: ' + err.message);
-            }
-        }
-
-        async function showLessonDetail(lessonId, lessonIndex) {
-            try {
-                let lesson;
-                try {
-                    const res = await fetch(`/api/lessons/${lessonId}`);
-                    lesson = await res.json();
-                } catch (e) {
-                    const module = courseData.modules?.find(m => String(m.id) === String(currentModule) || String(m.level_order) === String(currentModule));
-                    lesson = module?.lessons?.[lessonIndex];
-                }
-                if (!lesson) return;
-                currentLesson = lesson;
-                
-                document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
-                
-                const contentHtml = parseLessonContent(lesson.content);
-                document.getElementById('lesson-content').innerHTML = contentHtml;
-                
-                let wordsHtml = '';
-                const words = lesson.words || [];
-                
-                if (words.length === 0) {
-                    wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
-                } else {
-                    words.forEach(word => {
-                        const escapedWord = word.word.replace(/'/g, "\\'").replace(/"/g, '\\"');
-                        wordsHtml += `
-                        <div class="word-card">
-                            <div>
-                                <div class="word-chinese">${word.word}</div>
-                                <div class="word-pinyin">${word.pinyin}</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div class="word-meaning">${word.meaning}</div>
-                                <button class="audio-btn" onclick="playAudio('${escapedWord}')">🔊 Ouvir</button>
-                            </div>
-                        </div>`;
-                    });
-                }
-                document.getElementById('lesson-words').innerHTML = wordsHtml;
-                
-                showView('lesson-detail-view');
-            } catch (err) {
-                alert('Erro ao carregar lição: ' + err.message);
-            }
-}
 
         function startQuiz() {
             if (!currentModule) return;
             
-            fetch(`/api/modules/${currentModule}/quiz`)
+            fetch('/api/modules/' + currentModule + '/quiz')
                 .then(res => res.json())
                 .then(data => {
                     currentQuiz = data;
@@ -603,15 +456,14 @@ async function selectModule(moduleId) {
             }
             
             const q = currentQuiz[quizAnswered];
-            const questionText = q.question;
             
-            document.getElementById('quiz-progress').textContent = `Questão ${quizAnswered + 1} de ${currentQuiz.length}`;
-            document.getElementById('quiz-question-text').textContent = questionText;
+            document.getElementById('quiz-progress').textContent = 'Questão ' + (quizAnswered + 1) + ' de ' + currentQuiz.length;
+            document.getElementById('quiz-question-text').textContent = q.question;
             
             let optionsHtml = '';
             const options = q.options || [];
             options.forEach((opt, idx) => {
-                optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})">${opt}</div>`;
+                optionsHtml += '<div class="quiz-option" onclick="selectQuizOption(' + idx + ', ' + q.answer + ')">' + opt + '</div>';
             });
             document.getElementById('quiz-options').innerHTML = optionsHtml;
         }
@@ -631,33 +483,33 @@ async function selectModule(moduleId) {
             setTimeout(showQuizQuestion, 1000);
         }
 
-        async function showQuizResult() {
+        function showQuizResult() {
             const percentage = Math.round((quizScore / currentQuiz.length) * 100);
             const passed = percentage >= 70;
             
             document.getElementById('quiz-options').classList.add('hidden');
             document.getElementById('quiz-question-text').classList.add('hidden');
             document.getElementById('quiz-result').classList.remove('hidden');
-            document.getElementById('quiz-score').textContent = `${percentage}%`;
-            document.getElementById('quiz-score').className = `quiz-score ${passed ? 'quiz-passed' : 'quiz-failed'}`;
+            document.getElementById('quiz-score').textContent = percentage + '%';
+            document.getElementById('quiz-score').className = 'quiz-score ' + (passed ? 'quiz-passed' : 'quiz-failed');
             
             if (passed) {
-                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`;
+                document.getElementById('quiz-message').innerHTML = '<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>';
                 unlockNextModule();
             } else {
-                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+                document.getElementById('quiz-message').innerHTML = '<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>';
             }
         }
 
         function unlockNextModule() {
             const unlockedModules = JSON.parse(localStorage.getItem('unlockedModules') || '[]');
-            const moduleIndex = parseInt(currentModule) || 0;
-            if (!unlockedModules.includes(moduleIndex + 1)) {
-                unlockedModules.push(moduleIndex + 1);
+            const nextModule = currentModule + 1;
+            if (!unlockedModules.includes(nextModule)) {
+                unlockedModules.push(nextModule);
                 localStorage.setItem('unlockedModules', JSON.stringify(unlockedModules));
             }
             try {
-                fetch(`/api/modules/${currentModule}/unlock`, { method: 'POST' }).catch(() => {});
+                fetch('/api/modules/' + currentModule + '/unlock', { method: 'POST' }).catch(() => {});
             } catch (e) {}
         }
 
@@ -669,7 +521,7 @@ async function selectModule(moduleId) {
 
         function getLessonText() {
             if (!currentLesson) return '';
-            return currentLesson.content?.split('\n').filter(l => l.trim()).map(line => {
+            return currentLesson.content.split('\n').filter(l => l.trim()).map(line => {
                 const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
                 return match ? match[1].trim() : line.trim();
             }).join(' ') || '';
@@ -677,7 +529,6 @@ async function selectModule(moduleId) {
 
         function playAudio(text) {
             if (!text) return;
-            console.log('Playing:', text);
             speakWithWebSpeech(text);
         }
 
@@ -685,7 +536,6 @@ async function selectModule(moduleId) {
             if (!text) return;
             
             if (!('speechSynthesis' in window)) {
-                console.error('Speech synthesis not supported');
                 alert('Seu navegador não suporta síntese de voz. Tente usar Chrome ou Edge.');
                 return;
             }
@@ -693,7 +543,6 @@ async function selectModule(moduleId) {
             window.speechSynthesis.cancel();
             
             if (window.speechSynthesis.getVoices().length === 0) {
-                console.log('Loading voices...');
                 window.speechSynthesis.onvoiceschanged = () => {
                     doSpeak(text);
                 };
@@ -707,29 +556,14 @@ async function selectModule(moduleId) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'zh-CN';
             utterance.rate = 0.7;
-            utterance.volume = 1;
             
             const voices = window.speechSynthesis.getVoices();
             const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN'));
             if (chineseVoice) {
                 utterance.voice = chineseVoice;
-                console.log('Using voice:', chineseVoice.name);
-            } else {
-                console.log('Available voices:', voices.map(v => v.lang).slice(0, 5));
             }
             
-            utterance.onend = () => console.log('Speech ended');
-            utterance.onerror = (e) => console.error('Speech error:', e);
-            
             window.speechSynthesis.speak(utterance);
-        }
-
-        window.speechSynthesis.getVoices();
-        
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
-            };
         }
 
         loadModules();
