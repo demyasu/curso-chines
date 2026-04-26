@@ -4,7 +4,7 @@ from datetime import datetime
 DATABASE = 'chinese_course.db'
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE, timeout=10)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -77,8 +77,8 @@ def init_db():
     if cursor.execute('SELECT COUNT(*) FROM modules').fetchone()[0] == 0:
         seed_database(cursor)
     
-    if cursor.execute('SELECT COUNT(*) FROM words').fetchone()[0] < 100:
-        seed_words_for_all_lessons()
+    # if cursor.execute('SELECT COUNT(*) FROM words').fetchone()[0] < 100:
+    #     seed_words_for_all_lessons()
 
     conn.commit()
     conn.close()
@@ -256,8 +256,8 @@ def seed_database(cursor):
     ]
 
     cursor.executemany('''
-        INSERT INTO quiz_questions (module_id, question, options, answer)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO quiz_questions (lesson_id, module_id, question, options, answer)
+        VALUES (?, ?, ?, ?, ?)
     ''', quiz_data)
 
 def get_all_modules():
