@@ -225,7 +225,7 @@
         <div id="quiz-view" class="hidden">
             <button class="btn btn-secondary back-btn" onclick="showLessonDetailView()">← Voltar à Lição</button>
             <div class="content-box">
-                <div id="quiz-progress" style="text-align: center; margin-bottom: 20px; color: #666;">Questão 1</div>
+                <div id="quiz-result-title" style="font-size: 20px; margin-bottom: 15px; color: var(--primary);">Prova da Lição</div>
                 <div class="quiz-question" id="quiz-question-text"></div>
                 <div class="quiz-options" id="quiz-options"></div>
                 <div class="quiz-result hidden" id="quiz-result">
@@ -513,10 +513,44 @@
             } catch (e) {}
         }
 
-        function playLessonAudio() {
+function playLessonAudio() {
             if (!currentLesson) return;
             const text = getLessonText();
             if (text) playAudio(text);
+        }
+
+        function getLessonText() {
+            if (!currentLesson) return '';
+            return currentLesson.content.split('\n').filter(l => l.trim()).map(line => {
+                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
+                return match ? match[1].trim() : line.trim();
+            }).join(' ') || '';
+        }
+        
+        var currentLessonQuiz = [];
+        
+        function startQuiz() {
+            if (!currentLesson) return;
+            
+            fetch('/api/lessons/' + currentLesson.id + '/quiz')
+                .then(res => res.json())
+                .then(data => {
+                    currentQuiz = data;
+                    quizScore = 0;
+                    quizAnswered = 0;
+                    
+                    if (currentQuiz.length === 0) {
+                        alert('Quiz não disponível para esta lição.');
+                        return;
+                    }
+                    
+                    showView('quiz-view');
+                    document.getElementById('quiz-result').classList.add('hidden');
+                    document.getElementById('quiz-options').classList.remove('hidden');
+                    document.getElementById('quiz-question-text').classList.remove('hidden');
+                    showQuizQuestion();
+                })
+                .catch(err => alert('Erro ao carregar quiz: ' + err.message));
         }
 
         function getLessonText() {

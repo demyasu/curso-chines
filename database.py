@@ -50,10 +50,12 @@ def init_db():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS quiz_questions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lesson_id INTEGER,
             module_id INTEGER,
             question TEXT NOT NULL,
             options TEXT,
             answer INTEGER,
+            FOREIGN KEY (lesson_id) REFERENCES lessons(id),
             FOREIGN KEY (module_id) REFERENCES modules(id)
         )
     ''')
@@ -152,35 +154,105 @@ def seed_database(cursor):
     ''', words_data)
 
     quiz_data = [
-        (1, "Como se diz 'Olá' em chinês?", '["你好","再见","谢谢","不客气"]', 0),
-        (1, "Qual o número '五'?", '["5","3","7","4"]', 0),
-        (1, "Como se diz 'Obrigado'?", '["你好","对不起","谢谢","再见"]', 2),
-        (1, "O que significa '早上好'?", '["Boa tarde","Boa noite","Bom dia","Olá"]', 2),
-        (1, "Qual número vem depois de '七'?", '["六","八","九","十"]', 1),
-        (1, "Como se diz 'Adeus'?", '["你好","对不起","再见","谢谢"]', 2),
-        (1, "O que significa '八'?", '["6","7","8","9"]', 2),
+        # Saudações (lesson 1)
+        (1, 1, "Como se diz 'Olá' em chinês?", '["你好","再见","谢谢","不客气"]', 0),
+        (1, 1, "O que significa '再见'?", '["Olá","Adeus","Obrigado","De nada"]', 1),
+        (1, 1, "Como se diz 'Obrigado'?", '["你好","谢谢","对不起","没关系"]', 1),
         
-        (2, "Como se diz 'Comida' em chinês?", '["吃","喝","去","来"]', 0),
-        (2, "O que significa '出租车'?", '["Ônibus","Táxi","Metrô","Avião"]', 1),
-        (2, "Como se dice 'Hospital'?", '["银行","医院","学校","餐厅"]', 1),
-        (2, "O que significa '今天'?", '["Amanhã","Hoje","Ontem","Agora"]', 1),
-        (2, "Qual dia é 'Segunda-feira'?", '["星期二","星期一","星期三","星期四"]', 1),
-        (2, "Como se diz 'Supermercado'?", '["商场","超市","图书馆","餐厅"]', 1),
-        (2, "Quanto custa '多少钱'?", '["Quantos?","Quanto custa?","Onde fica?","Como se chama?"]', 1),
+        # Números (lesson 2)
+        (2, 1, "Qual é o número '一'?", '["1","2","3","4"]', 0),
+        (2, 1, "Como se diz 'três' em chinoês?", '["一","二","三","四"]', 2),
+        (2, 1, "Qual número vem depois de '七'?", '["六","八","九","十"]', 1),
         
-        (3, "Como se diz 'Contrato' em chinês?", '["会议","合同","报价","公司"]', 1),
-        (3, "O que significa '办公室'?", '["Escritório","Empresa","Casa","Fábrica"]', 0),
-        (3, "Como se diz 'Reunião'?", '["合同","会议","办公室","同事"]', 1),
-        (3, "O que significa '加班'?", '["Férias","Horas extras","Licença","Viagem"]', 1),
-        (3, "Como se diz 'Chefe'?", '["同事","老板","公司","员工"]', 1),
-        (3, "O que significa '出差'?", '["Fim de semana","Viagem de negócios","Feriado","Reunião"]', 1),
+        # Introdução Pessoal (lesson 3)
+        (3, 1, "Como se diz 'Meu nome é'?", '["我叫","我是","我来","你去"]', 0),
+        (3, 1, "O que significa '我来自'?", '["Eu sou","Eu vim de","Eu vou","Eu como"]', 1),
+        (3, 1, "Como perguntar 'De qual país você é?'", '["你是哪国人","你吃什么","你去哪里","你叫什么"]', 0),
         
-        (4, "O que significa '一帆风顺'?", '["Falhar","Bom sucesso","Esperar","Persistência"]', 1),
-        (4, "Como se diz 'Confúcio'?", '["老子","孔子","皇帝","天使"]', 1),
-        (4, "O que significa '道'?", '["Virtude","Caminho","Poder","Saber"]', 1),
-        (4, "O que significa '普通话'?", '["Cantonês","Mandarim padrão","Shanghainês","Dialeto"]', 1),
-        (4, "Qual é 'Yin e Yang'?", '["阴阳","八卦","天命","道德"]', 0),
-        (4, "Como se diz '汉字'?", '["Palavra","Caractere","Frase","Letra"]', 1),
+        # Família (lesson 4)
+        (4, 1, "Como se diz 'Pai' em chinês?", '["爸爸","妈妈","老师","学生"]', 0),
+        (4, 1, "O que significa '妈妈'?", '["Pai","Mãe","Irmão","Filho"]', 1),
+        (4, 1, "Como se diz 'amigo'?", '["朋友","老师","学生","同事"]', 0),
+        
+        # Cores (lesson 5)
+        (5, 1, "Como se diz 'vermelho'?", '["红色","蓝色","绿色","黄色"]', 0),
+        (5, 1, "O que significa '蓝色'?", '["Vermelho","Azul","Verde","Amarelo"]', 1),
+        (5, 1, "Como se diz 'preto'?", '["白色","黑色","紫色","棕色"]', 1),
+        
+        # Comida (lesson 6)
+        (6, 2, "Como pedir 'Eu quero este'?", '["我要这个","吃什么","喝什么","去哪儿"]', 0),
+        (6, 2, "O que significa '好吃'?", '["Caro","Barato","Delicioso","Não"]', 2),
+        (6, 2, "Como pedir a conta?", '["买单","菜单","好吃","便宜"]', 0),
+        
+        # Transporte (lesson 7)
+        (7, 2, "Como se diz 'táxi'?", '["出租车","公交车","地铁","飞机"]', 0),
+        (7, 2, "O que significa '地铁'?", '["Táxi","Ônibus","Metrô","Avião"]', 2),
+        (7, 2, "Como se diz 'esquerda'?", '["左边","右边","前边","后边"]', 0),
+        
+        # Compras (lesson 8)
+        (8, 2, "Como perguntar 'Quanto custa?'", '["多少钱","吃什么","去哪儿","买什么"]', 0),
+        (8, 2, "O que significa '太小了'?", '["Muito grande","Muito pequeno","Perfeito","Barato"]', 1),
+        (8, 2, "Como se diz 'perfeito'?", '["可以","太小了","正好","太贵了"]', 2),
+        
+        # Tempo (lesson 9)
+        (9, 2, "Como se diz 'hoje'?", '["今天","明天","昨天","现在"]', 0),
+        (9, 2, "O que significa '明天'?", '["Hoje","Amanhã","Ontem","Agora"]', 1),
+        (9, 2, "Qual dia é 'segunda-feira'?", '["星期二","星期一","星期三","星期四"]', 1),
+        
+        # Lugares (lesson 10)
+        (10, 2, "Como se diz 'hospital'?", '["医院","银���","学校","餐厅"]', 0),
+        (10, 2, "O que significa '银行'?", '["Hospital","Banco","Escola","Restaurante"]', 1),
+        (10, 2, "Como se diz 'parque'?", '["公园","图书馆","商场","超市"]', 0),
+        
+        # Negócios (lesson 11)
+        (11, 3, "Como se diz 'contrato'?", '["合同","会议","报价","公司"]', 0),
+        (11, 3, "O que significa '会议'?", '["Contrato","Reunião","Orçamento","Empresa"]', 1),
+        (11, 3, "Como se diz 'cotação'?", '["合同","会议","报价","公司"]', 2),
+        
+        # Expressões Avançadas (lesson 12)
+        (12, 3, "Como se diz 'para ser honesto'?", '["说实话","一般来说","事实上","我认为"]', 0),
+        (12, 3, "O que significa '一般来说'?", '["Para ser honesto","Em geral","Na verdade","Eu acho que"]', 1),
+        (12, 3, "Como se diz 'eu acho que'?", '["我知道","我认为","我感到","我希望"]', 1),
+        
+        # Emoções (lesson 13)
+        (13, 3, "Como se diz 'eu sinto'?", '["我感到","我很喜欢","我不太确定","我希望"]', 0),
+        (13, 3, "O que significa '我很喜欢'?", '["Eu sinto","Eu gosto muito de","Eu não sei","Eu espero"]', 1),
+        (13, 3, "Como se diz 'eu espero'?", '["我感到","我很喜欢","我不太确定","我希望"]', 3),
+        
+        # Telefone (lesson 14)
+        (14, 3, "Como perguntar 'Quem é?'?", '["请问您是哪位","请稍等","我现在不方便","您电话号码"]', 0),
+        (14, 3, "O que significa '请稍等'?", '["Quem é?","Aguarde um momento","Não é conveniente","Número de telefone"]', 1),
+        (14, 3, "Como se diz 'posso retornar?'?", '["我可以回电话吗","您是哪位","请稍等","现在不方便"]', 0),
+        
+        # Trabalho (lesson 15)
+        (15, 3, "Como se diz 'escritório'?", '["办公室","公司","同事","老板"]', 0),
+        (15, 3, "O que significa '加班'?", '["Férias","Horas extras","Licença","Viagem"]', 1),
+        (15, 3, "Como se diz 'chefe'?", '["同事","老板","公司","员工"]', 1),
+        
+        # Expressões Idiomáticas (lesson 16)
+        (16, 4, "O que significa '一帆风顺'?", '["Falhar","Bom sucesso","Esperar","Persistência"]', 1),
+        (16, 4, "Como se diz 'Confúcio'?", '["老子","孔子","皇帝","天使"]', 1),
+        (16, 4, "O que significa '道'?", '["Virtude","Caminho","Poder","Saber"]', 1),
+        
+        # Conversas Avançadas (lesson 17)
+        (17, 4, "Como se diz 'se...'?", '["如果","虽然","除非","否则"]', 0),
+        (17, 4, "O que significa '虽然...但是'?", '["Se...então","Embora...no entanto","A menos que...caso contrário","Não só...mas também"]', 1),
+        (17, 4, "Como se diz 'o que você acha?'?", '["你觉得怎么样","如果","虽然","除非"]', 0),
+        
+        # Literatura (lesson 18)
+        (18, 4, "Como se diz 'poesia clássica'?", '["古诗","唐诗","小说","论语"]', 0),
+        (18, 4, "O que significa '小说'?", '["Poesia","Romance","Cultura","História"]', 1),
+        (18, 4, "Como se diz 'caracteres chineses'?", '["汉字","文化","历史","古诗"]', 0),
+        
+        # Filosofia (lesson 19)
+        (19, 4, "Como se diz 'Confúcio'?", '["孔子","老子","道德","天命"]', 0),
+        (19, 4, "O que significa '阴阳'?", '["Yin e Yang","Oito Trigramas","Mandato do Céu","Virtude"]', 0),
+        (19, 4, "Como se diz 'o Caminho'?", '["道","德","天命","阴阳"]', 0),
+        
+        # Expressões Regionais (lesson 20)
+        (20, 4, "O que significa '普通话'?", '["Cantonês","Mandarim padrão","Shanghainês","Dialeto"]', 1),
+        (20, 4, "Como se diz 'cantonês'?", '["普通话","广东话","上海话","东北话"]', 1),
+        (20, 4, "O que significa '口音'?", '["Sotaque","Dialeto","Sufixo er","Mandarim"]', 0),
     ]
 
     cursor.executemany('''
@@ -247,6 +319,14 @@ def get_quiz_by_module(module_id):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM quiz_questions WHERE module_id = ?', (module_id,))
+    questions = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return questions
+
+def get_quiz_by_lesson(lesson_id):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM quiz_questions WHERE lesson_id = ?', (lesson_id,))
     questions = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return questions

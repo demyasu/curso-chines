@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from database import init_db, get_all_modules, get_module_by_id, get_lessons_by_module, get_lesson_by_id, get_words_by_lesson, get_quiz_by_module, add_word, add_module, add_lesson, unlock_module, search_words
+from database import init_db, get_all_modules, get_module_by_id, get_lessons_by_module, get_lesson_by_id, get_words_by_lesson, get_quiz_by_module, get_quiz_by_lesson, add_word, add_module, add_lesson, unlock_module, search_words
 import os
 
 app = Flask(__name__)
@@ -40,6 +40,13 @@ def api_get_lesson(lesson_id):
 @app.route('/api/modules/<int:module_id>/quiz', methods=['GET'])
 def api_get_module_quiz(module_id):
     questions = get_quiz_by_module(module_id)
+    for q in questions:
+        q['options'] = eval(q['options']) if isinstance(q['options'], str) else q['options']
+    return jsonify(questions)
+
+@app.route('/api/lessons/<int:lesson_id>/quiz', methods=['GET'])
+def api_get_lesson_quiz(lesson_id):
+    questions = get_quiz_by_lesson(lesson_id)
     for q in questions:
         q['options'] = eval(q['options']) if isinstance(q['options'], str) else q['options']
     return jsonify(questions)
