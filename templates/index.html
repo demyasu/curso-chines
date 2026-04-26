@@ -373,10 +373,32 @@
                         currentLessons = lessons;
                         renderLessons(lessons);
                         showView('lessons-view');
-                    });
-            } else {
-                showView('lessons-view');
-            }
+});
+            container.innerHTML = html;
+        }
+
+        function parseLessonContent(content) {
+            if (!content) return '';
+            
+            const lines = content.split('\n').filter(l => l.trim());
+            return lines.map(line => {
+                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
+                if (match) {
+                    const chinese = match[1].trim();
+                    const translation = match[2].trim();
+                    return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div>
+                            <span style="font-size: 24px;">${chinese}</span>
+                            <span style="color: #666; margin-left: 10px;">- ${translation}</span>
+                        </div>
+                        <button class="audio-btn" onclick="playAudio('${chinese.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
+                    </div>`;
+                }
+                return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                    <span style="font-size: 24px;">${line}</span>
+                    <button class="audio-btn" onclick="playAudio('${line.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
+                </div>`;
+            }).join('');
         }
 
         async function showLessonDetail(lessonId, lessonIndex) {
