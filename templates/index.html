@@ -532,27 +532,7 @@
             }).join(' ') || '';
         }
 
-        function speakWithWebSpeech(text) {
-            if (!text) return;
-            
-            if (window.speechSynthesis.getVoices().length === 0) {
-                window.speechSynthesis.onvoiceschanged = () => {
-                    doSpeak(text);
-                };
-            } else {
-                doSpeak(text);
-            }
-        }
-
-        function doSpeak(text) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'zh-CN';
-            utterance.rate = 0.7;
-            window.speechSynthesis.speak(utterance);
-        }
-
-function playAudio(text) {
+        function playAudio(text) {
             if (!text) return;
             console.log('Playing:', text);
             speakWithWebSpeech(text);
