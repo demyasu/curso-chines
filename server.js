@@ -3,9 +3,15 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 9090;
 const baseUrl = `http://localhost:${PORT}`;
-const courseData = JSON.parse(fs.readFileSync('./course_data.json', 'utf8'));
+
+let courseData;
+try {
+    courseData = JSON.parse(fs.readFileSync('./course_data.json', 'utf8'));
+} catch (e) {
+    courseData = JSON.parse(fs.readFileSync('./static/course_data.json', 'utf8'));
+}
 
 const MIME = {
     '.html': 'text/html',
@@ -16,12 +22,13 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-    if (req.url.startsWith('/api/audio')) {
+    // TTS API
+    if (req.url.startsWith('/api/tts')) {
         const url = new URL(req.url, baseUrl);
         const text = url.searchParams.get('text') || '';
         
         if (!text) {
-            res.writeHead(400, {'Content-Type': 'application/json'});
+            res.writeHead(400, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
             res.end(JSON.stringify({ error: 'Text is required' }));
             return;
         }
@@ -31,21 +38,27 @@ const server = http.createServer((req, res) => {
         
         https.get(ttsUrl, (proxyRes) => {
             if (proxyRes.statusCode !== 200) {
-                res.writeHead(proxyRes.statusCode, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({ error: 'TTS failed' }));
+                res.writeHead(proxyRes.statusCode, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
+                res.end(JSON.stringify({ error: 'TTS failed: ' + proxyRes.statusCode }));
                 return;
             }
             
-            res.writeHead(200, {'Content-Type': 'audio/mpeg', 'Access-Control-Allow-Origin': '*'});
+            res.writeHead(200, {
+                'Content-Type': 'audio/mpeg',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, POST',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            });
             proxyRes.pipe(res);
         }).on('error', (e) => {
             console.error('TTS error:', e.message);
-            res.writeHead(500, {'Content-Type': 'application/json'});
+            res.writeHead(500, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
             res.end(JSON.stringify({ error: e.message }));
         });
         return;
     }
     
+    // Course API
     if (req.url === '/api/course') {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ modules: courseData.modules.map(m => ({
@@ -55,8 +68,22 @@ const server = http.createServer((req, res) => {
         return;
     }
     
+    // CORS headers for API
+    if (req.url.startsWith('/api/')) {
+        res.writeHead(200, {'Access-Control-Allow-Origin': '*'});
+        res.end();
+        return;
+    }
+    
+    // Static files
     let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
     
+    // Try static folder first
+    if (!fs.existsSync(filePath)) {
+        filePath = path.join(__dirname, 'static', req.url === '/' ? 'index.html' : req.url);
+    }
+    
+    // Fallback to index.html
     if (!fs.existsSync(filePath)) {
         filePath = path.join(__dirname, 'index.html');
     }

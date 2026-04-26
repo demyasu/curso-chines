@@ -65,7 +65,7 @@ def api_audio():
         return jsonify({'error': 'Text is required'}), 400
     
     lang = request.args.get('lang', 'zh-CN')
-    filename = f"audio_{hash(text)}.mp3"
+    filename = f"audio_{abs(hash(text))}.mp3"
     filepath = os.path.join('static', 'audio', filename)
     full_path = os.path.join(os.path.dirname(__file__), filepath)
     
@@ -75,7 +75,8 @@ def api_audio():
         tts = gTTS(text=text, lang=lang, slow=False)
         tts.save(full_path)
     
-    return jsonify({'audio_url': f'/{filepath}'})
+    from flask import send_file
+    return send_file(full_path, mimetype='audio/mpeg')
 
 @app.route('/api/words', methods=['POST'])
 def api_add_word():

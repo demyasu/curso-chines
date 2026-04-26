@@ -269,9 +269,10 @@
 
         async function loadModules() {
             try {
-                const res = await fetch('./course_data.json');
-                courseData = await res.json();
-                renderModules(courseData.modules);
+                const res = await fetch('/api/modules');
+                const data = await res.json();
+                courseData.modules = data;
+                renderModules(data);
             } catch (err) {
                 document.getElementById('modules-grid').innerHTML = `<div class="error">Erro ao carregar módulos: ${err.message}</div>`;
             }
@@ -279,12 +280,16 @@
 
         function renderModules(modules) {
             const grid = document.getElementById('modules-grid');
-            grid.innerHTML = modules.map((m, idx) => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}', ${idx + 1})`}">
+            if (!modules || modules.length === 0) {
+                grid.innerHTML = '<div class="error">Nenhum módulo disponível.</div>';
+                return;
+            }
+            grid.innerHTML = modules.map((m) => `
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}')`}">
                     <div class="module-icon">${m.icon}</div>
                     <div class="module-title">${m.title}</div>
                     <div class="module-title-zh">${m.title_zh}</div>
-                    <div class="module-desc">${m.description}</div>
+                    <div class="module-desc">${m.description || ''}</div>
                     <div class="module-words-count">📚 ${m.word_count || 0} palavras</div>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${m.locked ? '0%' : '100%'}"></div>
@@ -307,13 +312,75 @@
             showView('about-view');
         }
 
-        function selectModule(moduleId, moduleIndex) {
+let currentLessons = [];
+
+        async function selectModule(moduleId) {
             currentModule = moduleId;
-            const module = courseData.modules[moduleIndex - 1];
-            if (module) {
-                renderLessons(module.lessons);
+            try {
+                const res = await fetch(`/api/modules/${moduleId}/lessons`);
+                currentLessons = await res.json();
+                renderLessons(currentLessons);
                 showView('lessons-view');
+            } catch (err) {
+                alert('Erro ao carregar lições: ' + err.message);
             }
+        }
+
+        async function renderLessons(lessons) {
+            const container = document.getElementById('lessons-container');
+            let html = '<h2 class="lesson-title">Selecione uma lição</h2><div class="modules-grid">';
+            
+            lessons.forEach((l, idx) => {
+                const wordCount = l.word_count || 0;
+                html += `
+                <div class="module-card" onclick="showLessonDetail('${l.id}', ${idx})">
+                    <div class="module-icon">📚</div>
+                    <div class="module-title">${idx + 1}. ${l.title}</div>
+                    <div class="module-title-zh">${l.title_zh}</div>
+                    <div class="module-desc">${wordCount} palavras</div>
+                </div>`;
+            });
+            
+            html += '</div>';
+            html += `<button class="btn btn-primary" style="margin-top: 30px;" onclick="startQuiz()">📝 Fazer Prova do Módulo</button>`;
+            container.innerHTML = html;
+        }
+
+        async function showLessonDetail(lessonId, lessonIndex) {
+            const lesson = currentLessons[lessonIndex];
+            if (!lesson) return;
+            
+            currentLesson = lesson;
+            
+            document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
+            
+            const contentHtml = parseLessonContent(lesson.content);
+            document.getElementById('lesson-content').innerHTML = contentHtml;
+            
+            let wordsHtml = '';
+            const words = lesson.words || [];
+            
+            if (words.length === 0) {
+                wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
+            } else {
+                words.forEach(word => {
+                    wordsHtml += `
+                    <div class="word-card">
+                        <div>
+                            <div class="word-chinese">${word.word}</div>
+                            <div class="word-pinyin">${word.pinyin}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="word-meaning">${word.meaning}</div>
+                            <button class="audio-btn" onclick="playWordAudio('${word.word}')">🔊</button>
+                        </div>
+                    </div>`;
+                });
+            }
+            document.getElementById('lesson-words').innerHTML = wordsHtml;
+            
+            showView('lesson-detail-view');
+        }
         }
 
         function renderLessons(lessons) {
@@ -336,13 +403,59 @@
             container.innerHTML = html;
         }
 
-        function showLessons() {
+async function showLessons() {
             if (currentModule) {
-                const moduleIndex = courseData.modules.findIndex(m => m.id === currentModule);
-                if (moduleIndex >= 0) {
-                    renderLessons(courseData.modules[moduleIndex].lessons);
+                try {
+                    const res = await fetch(`/api/modules/${currentModule}/lessons`);
+                    currentLessons = await res.json();
+                    renderLessons(currentLessons);
                     showView('lessons-view');
+                } catch (err) {
+                    alert('Erro ao carregar lições: ' + err.message);
                 }
+            } else {
+                showView('lessons-view');
+            }
+        }
+
+        async function showLessonDetail(lessonId, lessonIndex) {
+            try {
+                const res = await fetch(`/api/lessons/${lessonId}`);
+                const lesson = await res.json();
+                currentLesson = lesson;
+                
+                document.getElementById('lesson-detail-title').textContent = `${lesson.title} - ${lesson.title_zh}`;
+                
+                const contentHtml = parseLessonContent(lesson.content);
+                document.getElementById('lesson-content').innerHTML = contentHtml;
+                
+                let wordsHtml = '';
+                const words = lesson.words || [];
+                
+                if (words.length === 0) {
+                    wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
+                } else {
+                    words.forEach(word => {
+                        wordsHtml += `
+                        <div class="word-card">
+                            <div>
+                                <div class="word-chinese">${word.word}</div>
+                                <div class="word-pinyin">${word.pinyin}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="word-meaning">${word.meaning}</div>
+                                <button class="audio-btn" onclick="playWordAudio('${word.word}')">🔊</button>
+                            </div>
+                        </div>`;
+                    });
+                }
+                document.getElementById('lesson-words').innerHTML = wordsHtml;
+                
+                showView('lesson-detail-view');
+            } catch (err) {
+                alert('Erro ao carregar lição: ' + err.message);
+            }
+        }
             } else {
                 showView('lessons-view');
             }
@@ -400,24 +513,33 @@
             }).join('');
         }
 
-        function startQuiz() {
-            const module = courseData.modules.find(m => m.id === currentModule);
-            if (!module) return;
+        let currentQuiz = [];
+        let quizScore = 0;
+        let quizAnswered = 0;
+        let moduleOrder = 0;
+
+        async function startQuiz() {
+            if (!currentModule) return;
             
-            currentQuiz = module.quiz?.questions || [];
-            quizScore = 0;
-            quizAnswered = 0;
-            
-            if (currentQuiz.length === 0) {
-                alert('Quiz não disponível para este módulo.');
-                return;
+            try {
+                const res = await fetch(`/api/modules/${currentModule}/quiz`);
+                currentQuiz = await res.json();
+                quizScore = 0;
+                quizAnswered = 0;
+                
+                if (currentQuiz.length === 0) {
+                    alert('Quiz não disponível para este módulo.');
+                    return;
+                }
+                
+                showView('quiz-view');
+                document.getElementById('quiz-result').classList.add('hidden');
+                document.getElementById('quiz-options').classList.remove('hidden');
+                document.getElementById('quiz-question-text').classList.remove('hidden');
+                showQuizQuestion();
+            } catch (err) {
+                alert('Erro ao carregar quiz: ' + err.message);
             }
-            
-            showView('quiz-view');
-            document.getElementById('quiz-result').classList.add('hidden');
-            document.getElementById('quiz-options').classList.remove('hidden');
-            document.getElementById('quiz-question-text').classList.remove('hidden');
-            showQuizQuestion();
         }
 
         function showQuizQuestion() {
@@ -427,13 +549,14 @@
             }
             
             const q = currentQuiz[quizAnswered];
-            const questionText = q.q || q.question;
+            const questionText = q.question;
             
             document.getElementById('quiz-progress').textContent = `Questão ${quizAnswered + 1} de ${currentQuiz.length}`;
             document.getElementById('quiz-question-text').textContent = questionText;
             
             let optionsHtml = '';
-            q.options.forEach((opt, idx) => {
+            const options = q.options || [];
+            options.forEach((opt, idx) => {
                 optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})">${opt}</div>`;
             });
             document.getElementById('quiz-options').innerHTML = optionsHtml;
@@ -454,7 +577,7 @@
             setTimeout(showQuizQuestion, 1000);
         }
 
-        function showQuizResult() {
+        async function showQuizResult() {
             const percentage = Math.round((quizScore / currentQuiz.length) * 100);
             const passed = percentage >= 70;
             
@@ -463,12 +586,20 @@
             document.getElementById('quiz-result').classList.remove('hidden');
             document.getElementById('quiz-score').textContent = `${percentage}%`;
             document.getElementById('quiz-score').className = `quiz-score ${passed ? 'quiz-passed' : 'quiz-failed'}`;
-            document.getElementById('quiz-message').innerHTML = passed 
-                ? `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`
-                : `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+            
+            if (passed) {
+                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`;
+                try {
+                    await fetch(`/api/modules/${currentModule}/unlock`, { method: 'POST' });
+                } catch (e) {
+                    console.error('Erro ao desbloquear próximo módulo:', e);
+                }
+            } else {
+                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+            }
         }
 
-        function playWordAudio(word) {
+function playWordAudio(word) {
             if (!word) return;
             speakWithWebSpeech(word);
         }
@@ -479,36 +610,22 @@
             if (text) speakWithWebSpeech(text);
         }
 
-function speakWithWebSpeech(text) {
+        const API_BASE = window.location.origin;
+
+        function speakWithWebSpeech(text) {
             if (!text) return;
             
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'zh-CN';
-                utter.rate = 0.8;
-                utter.pitch = 1;
-                
-                // Wait for voices to load
-                const trySpeak = () => {
-                    const voices = window.speechSynthesis.getVoices();
-                    const zhVoice = voices.find(v => v.lang.includes('zh'));
-                    if (zhVoice) {
-                        utter.voice = zhVoice;
-                    }
-                    window.speechSynthesis.speak(utter);
-                };
-                
-                if (window.speechSynthesis.getVoices().length > 0) {
-                    trySpeak();
-                } else {
-                    window.speechSynthesis.onvoiceschanged = trySpeak;
-                }
-            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.8;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN'));
+            if (chineseVoice) utterance.voice = chineseVoice;
+            
+            window.speechSynthesis.speak(utterance);
         }
 
-        // Initialize voices on load
         if ('speechSynthesis' in window) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {

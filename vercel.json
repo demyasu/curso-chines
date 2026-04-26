@@ -2,5 +2,8 @@
   "buildCommand": "",
   "outputDirectory": "static",
   "installCommand": "",
-  "framework": null
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ]
 }

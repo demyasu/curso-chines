@@ -159,6 +159,28 @@ def seed_database(cursor):
         (1, "Qual número vem depois de '七'?", '["六","八","九","十"]', 1),
         (1, "Como se diz 'Adeus'?", '["你好","对不起","再见","谢谢"]', 2),
         (1, "O que significa '八'?", '["6","7","8","9"]', 2),
+        
+        (2, "Como se diz 'Comida' em chinês?", '["吃","喝","去","来"]', 0),
+        (2, "O que significa '出租车'?", '["Ônibus","Táxi","Metrô","Avião"]', 1),
+        (2, "Como se dice 'Hospital'?", '["银行","医院","学校","餐厅"]', 1),
+        (2, "O que significa '今天'?", '["Amanhã","Hoje","Ontem","Agora"]', 1),
+        (2, "Qual dia é 'Segunda-feira'?", '["星期二","星期一","星期三","星期四"]', 1),
+        (2, "Como se diz 'Supermercado'?", '["商场","超市","图书馆","餐厅"]', 1),
+        (2, "Quanto custa '多少钱'?", '["Quantos?","Quanto custa?","Onde fica?","Como se chama?"]', 1),
+        
+        (3, "Como se diz 'Contrato' em chinês?", '["会议","合同","报价","公司"]', 1),
+        (3, "O que significa '办公室'?", '["Escritório","Empresa","Casa","Fábrica"]', 0),
+        (3, "Como se diz 'Reunião'?", '["合同","会议","办公室","同事"]', 1),
+        (3, "O que significa '加班'?", '["Férias","Horas extras","Licença","Viagem"]', 1),
+        (3, "Como se diz 'Chefe'?", '["同事","老板","公司","员工"]', 1),
+        (3, "O que significa '出差'?", '["Fim de semana","Viagem de negócios","Feriado","Reunião"]', 1),
+        
+        (4, "O que significa '一帆风顺'?", '["Falhar","Bom sucesso","Esperar","Persistência"]', 1),
+        (4, "Como se diz 'Confúcio'?", '["老子","孔子","皇帝","天使"]', 1),
+        (4, "O que significa '道'?", '["Virtude","Caminho","Poder","Saber"]', 1),
+        (4, "O que significa '普通话'?", '["Cantonês","Mandarim padrão","Shanghainês","Dialeto"]', 1),
+        (4, "Qual é 'Yin e Yang'?", '["阴阳","八卦","天命","道德"]', 0),
+        (4, "Como se diz '汉字'?", '["Palavra","Caractere","Frase","Letra"]', 1),
     ]
 
     cursor.executemany('''
@@ -408,6 +430,11 @@ def unlock_module(module_id):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('UPDATE modules SET locked = 0 WHERE id = ?', (module_id,))
+    cursor.execute('SELECT level_order FROM modules WHERE id = ?', (module_id,))
+    result = cursor.fetchone()
+    if result:
+        current_order = result[0]
+        cursor.execute('UPDATE modules SET locked = 0 WHERE level_order = ?', (current_order + 1,))
     conn.commit()
     conn.close()
 

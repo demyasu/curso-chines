@@ -11,3 +11,6 @@ static/audio/*
 !static/audio/.gitkeep
 .vscode/
 .idea/
+__pycache__/
+*.pyc
+UsersUserAppDataLocalProgramsPythonPython314Libsite-packages/
