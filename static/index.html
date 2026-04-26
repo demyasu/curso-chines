@@ -479,8 +479,6 @@ function playWordAudio(word) {
             const text = currentLesson.content?.split('\n')[0]?.split(/[-–—]/)[0]?.trim();
             if (text) speakWithWebSpeech(text);
         }
-        
-        const API_BASE = window.location.origin;
 
         function speakWithWebSpeech(text) {
             if (!text) return;
