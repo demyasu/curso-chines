@@ -121,6 +121,7 @@
         }
         
         .audio-btn:hover { background: #007BEF; }
+        .audio-btn:active { transform: scale(0.95); }
         
         .words-list { display: grid; gap: 16px; margin-top: 20px; }
         
@@ -213,7 +214,7 @@
             <div class="content-box">
                 <h3 class="section-title">Conteúdo da Lição</h3>
                 <div id="lesson-content" class="chinese-text"></div>
-                <button class="audio-btn" onclick="playLessonAudio()">🔊 Ouvir pronúncia</button>
+                <button class="audio-btn" onclick="playLessonAudio()">🔊 Ouvir lição</button>
             </div>
             <div class="content-box">
                 <h3 class="section-title">Palavras-chave</h3>
@@ -260,7 +261,6 @@
     </footer>
 
     <script>
-        const API_BASE = window.location.origin;
         let courseData = { modules: [] };
         let currentModule = null;
         let currentLesson = null;
@@ -280,8 +280,17 @@
 
         function renderModules(modules) {
             const grid = document.getElementById('modules-grid');
+            const unlockedModules = JSON.parse(localStorage.getItem('unlockedModules') || '[]');
+            
+            modules.forEach(m => {
+                const moduleIndex = parseInt(m.id) || parseInt(m.level_order) || 0;
+                if (unlockedModules.includes(moduleIndex)) {
+                    m.locked = false;
+                }
+            });
+            
             grid.innerHTML = modules.map((m, idx) => `
-                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id}', ${idx + 1})`}">
+                <div class="module-card ${m.locked ? 'locked' : ''}" onclick="${m.locked ? '' : `selectModule('${m.id || m.level_order || idx + 1}')`}">
                     <div class="module-icon">${m.icon}</div>
                     <div class="module-title">${m.title}</div>
                     <div class="module-title-zh">${m.title_zh}</div>
@@ -308,9 +317,9 @@
             showView('about-view');
         }
 
-        function selectModule(moduleId, moduleIndex) {
+        function selectModule(moduleId) {
             currentModule = moduleId;
-            const module = courseData.modules[moduleIndex - 1];
+            const module = courseData.modules.find(m => String(m.id) === String(moduleId) || String(m.level_order) === String(moduleId));
             if (module) {
                 renderLessons(module.lessons);
                 showView('lessons-view');
@@ -324,7 +333,7 @@
             lessons.forEach((l, idx) => {
                 const wordCount = l.words?.length || 0;
                 html += `
-                <div class="module-card" onclick="showLessonDetail('${l.id}', ${idx + 1})">
+                <div class="module-card" onclick="showLessonDetail('${l.id}', ${idx})">
                     <div class="module-icon">📚</div>
                     <div class="module-title">${idx + 1}. ${l.title}</div>
                     <div class="module-title-zh">${l.title_zh}</div>
@@ -339,9 +348,9 @@
 
         function showLessons() {
             if (currentModule) {
-                const moduleIndex = courseData.modules.findIndex(m => m.id === currentModule);
-                if (moduleIndex >= 0) {
-                    renderLessons(courseData.modules[moduleIndex].lessons);
+                const module = courseData.modules.find(m => String(m.id) === String(currentModule) || String(m.level_order) === String(currentModule));
+                if (module) {
+                    renderLessons(module.lessons);
                     showView('lessons-view');
                 }
             } else {
@@ -350,10 +359,10 @@
         }
 
         function showLessonDetail(lessonId, lessonIndex) {
-            const module = courseData.modules.find(m => m.id === currentModule);
+            const module = courseData.modules.find(m => String(m.id) === String(currentModule) || String(m.level_order) === String(currentModule));
             if (!module) return;
             
-            const lesson = module.lessons[lessonIndex - 1];
+            const lesson = module.lessons[lessonIndex];
             if (!lesson) return;
             
             currentLesson = lesson;
@@ -370,6 +379,7 @@
                 wordsHtml = '<p>Nenhuma palavra cadastrada para esta lição.</p>';
             } else {
                 words.forEach(word => {
+                    const escapedWord = word.word.replace(/'/g, "\\'").replace(/"/g, '\\"');
                     wordsHtml += `
                     <div class="word-card">
                         <div>
@@ -378,7 +388,7 @@
                         </div>
                         <div style="text-align: right;">
                             <div class="word-meaning">${word.meaning}</div>
-                            <button class="audio-btn" onclick="playWordAudio('${word.word}')">🔊</button>
+                            <button class="audio-btn" onclick="playAudio('${escapedWord}')">🔊 Ouvir</button>
                         </div>
                     </div>`;
                 });
@@ -395,14 +405,25 @@
             return lines.map(line => {
                 const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
                 if (match) {
-                    return `<div>${match[1].trim()} <span style="color: #666;">- ${match[2].trim()}</span></div>`;
+                    const chinese = match[1].trim();
+                    const translation = match[2].trim();
+                    return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                        <div>
+                            <span style="font-size: 24px;">${chinese}</span>
+                            <span style="color: #666; margin-left: 10px;">- ${translation}</span>
+                        </div>
+                        <button class="audio-btn" onclick="playAudio('${chinese.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
+                    </div>`;
                 }
-                return `<div>${line}</div>`;
+                return `<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+                    <span style="font-size: 24px;">${line}</span>
+                    <button class="audio-btn" onclick="playAudio('${line.replace(/'/g, "\\'")}')">🔊 Ouvir</button>
+                </div>`;
             }).join('');
         }
 
         function startQuiz() {
-            const module = courseData.modules.find(m => m.id === currentModule);
+            const module = courseData.modules.find(m => String(m.id) === String(currentModule) || String(m.level_order) === String(currentModule));
             if (!module) return;
             
             currentQuiz = module.quiz?.questions || [];
@@ -434,7 +455,8 @@
             document.getElementById('quiz-question-text').textContent = questionText;
             
             let optionsHtml = '';
-            q.options.forEach((opt, idx) => {
+            const options = q.options || [];
+            options.forEach((opt, idx) => {
                 optionsHtml += `<div class="quiz-option" onclick="selectQuizOption(${idx}, ${q.answer})">${opt}</div>`;
             });
             document.getElementById('quiz-options').innerHTML = optionsHtml;
@@ -464,33 +486,85 @@
             document.getElementById('quiz-result').classList.remove('hidden');
             document.getElementById('quiz-score').textContent = `${percentage}%`;
             document.getElementById('quiz-score').className = `quiz-score ${passed ? 'quiz-passed' : 'quiz-failed'}`;
-            document.getElementById('quiz-message').innerHTML = passed 
-                ? `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`
-                : `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+            
+            if (passed) {
+                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">🎉 Parabéns! Você passou!</p><p style="color: #666;">Pode avançar para o próximo nível.</p>`;
+                unlockNextModule();
+            } else {
+                document.getElementById('quiz-message').innerHTML = `<p style="font-size: 24px;">😔 Você precisa de 70% para passar.</p><p style="color: #666;">Tente novamente.</p>`;
+            }
         }
 
-function playWordAudio(word) {
-            if (!word) return;
-            speakWithWebSpeech(word);
+        function unlockNextModule() {
+            const unlockedModules = JSON.parse(localStorage.getItem('unlockedModules') || '[]');
+            const moduleIndex = parseInt(currentModule) || 0;
+            if (!unlockedModules.includes(moduleIndex + 1)) {
+                unlockedModules.push(moduleIndex + 1);
+                localStorage.setItem('unlockedModules', JSON.stringify(unlockedModules));
+            }
         }
-        
+
         function playLessonAudio() {
             if (!currentLesson) return;
-            const text = currentLesson.content?.split('\n')[0]?.split(/[-–—]/)[0]?.trim();
-            if (text) speakWithWebSpeech(text);
+            const text = getLessonText();
+            if (text) playAudio(text);
+        }
+
+        function getLessonText() {
+            if (!currentLesson) return '';
+            return currentLesson.content?.split('\n').filter(l => l.trim()).map(line => {
+                const match = line.match(/^(.+?)\s*[-(–—]\s*(.+)$/);
+                return match ? match[1].trim() : line.trim();
+            }).join(' ') || '';
+        }
+
+        function playAudio(text) {
+            if (!text) return;
+            speakWithWebSpeech(text);
         }
 
         function speakWithWebSpeech(text) {
             if (!text) return;
             
-            fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`)
-                .then(res => res.ok ? res.blob() : Promise.reject('TTS failed'))
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    const audio = new Audio(url);
-                    audio.play();
-                })
-                .catch(e => console.error('TTS error:', e));
+            if (!('speechSynthesis' in window)) {
+                console.error('Speech synthesis not supported');
+                alert('Seu navegador não suporta síntese de voz. Tente usar Chrome ou Edge.');
+                return;
+            }
+            
+            window.speechSynthesis.cancel();
+            
+            if (window.speechSynthesis.getVoices().length === 0) {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    doSpeak(text);
+                };
+                window.speechSynthesis.getVoices();
+            } else {
+                doSpeak(text);
+            }
+        }
+
+        function doSpeak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.7;
+            utterance.volume = 1;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const chineseVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('CN'));
+            if (chineseVoice) {
+                utterance.voice = chineseVoice;
+            }
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        window.speechSynthesis.getVoices();
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
+            };
         }
 
         loadModules();
